@@ -25,7 +25,7 @@ namespace draft_assignment
 
             // Creating a dictionary, to store Order information
             Dictionary<int, Order> OrderDic = new Dictionary<int, Order>();
-            
+
 
             while (true)
             {
@@ -272,7 +272,10 @@ namespace draft_assignment
                     }
                     // Creating a new customer
                     Customer newCustomer = new Customer(name, memberid, dob);
-                    PointCard newPointCard = new PointCard(0, 0);
+                    PointCard newPointCard = new PointCard(0, 0)
+                    {
+                        Tier = "Ordinary"
+                    };
                     newCustomer.Rewards = newPointCard;
                     // Intialisng path for customers.csv
                     string filePath = "customers.csv";
@@ -283,20 +286,24 @@ namespace draft_assignment
                         sw.WriteLine(customerLine);
                     }
                     Console.WriteLine(" Successfully created");
+                    break;
                 }
                 catch (FormatException)
                 {
-                    Console.WriteLine(" Please enter a valid input.");
+                    Console.WriteLine(" Please enter a valid input.\n");
                 }
                 catch (FileNotFoundException)
                 {
-                    Console.WriteLine(" Customer CSV file not found. Please make sure the file exists.");
+                    Console.WriteLine(" Customer CSV file not found. Please make sure the file exists.\n");
                 }
                 catch (Exception ex)
                 {
-                    Console.WriteLine($" Error occurred: {ex.Message}");
+                    Console.WriteLine($" Error occurred: {ex.Message}\n");
                 }
             }
         }
+        // Option 4 Create a customer’s order
+
     }
 }
+                    
