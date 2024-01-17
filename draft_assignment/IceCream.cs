@@ -38,13 +38,12 @@ namespace draft_assignment
             {
                 flavourDetails += $"{flavour}\n";
             }
-
             string toppingDetails = "";
             foreach (Topping topping in Toppings)
             {
                 toppingDetails += $"{topping}";
             }
-            return $" Option: {Option,-10}\n Scoop: {Scoop,-10}\n Flavours:\n     {flavourDetails}\n Toppings: {toppingDetails}";
+            return $" Option: {Option,-10}\n Scoop: {Scoop,-10}\n Flavours:\n {flavourDetails}\n Toppings: {toppingDetails}";
 
         }
     }

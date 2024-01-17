@@ -17,12 +17,17 @@ namespace draft_assignment
         public string Name { get { return _name; } set { _name = value; } }
         public int Memberid { get { return _memberid; } set { _memberid = value; } }
         public DateTime Dob { get { return _dob; } set { _dob = value; } }
-        public Order currentOrder { get { return _currentorder; } set { _currentorder = value; } }
+        public Order CurrentOrder { get { return _currentorder; } set { _currentorder = value; } }
         public List<Order> OrderHistory { get { return _orderHistory; } set { _orderHistory = value; } }
         public PointCard Rewards { get { return _rewards; } set { _rewards = value; } }
 
         // Declaring default constructor
-        public Customer() { }
+        public Customer()
+        {
+            string name = "Unknown";
+            int memberid = 0;
+            DateTime dob = DateTime.Now;
+        }
         // Declaring a parameterized constructor
         public Customer(string name, int id, DateTime dob)
         {
@@ -33,8 +38,8 @@ namespace draft_assignment
         // Methods
         public Order MakeOrder()
         {
-            currentOrder = new Order();
-            return currentOrder;
+            CurrentOrder = new Order();
+            return CurrentOrder;
         }
         public bool IsBirthday()
         {
