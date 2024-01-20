@@ -22,7 +22,7 @@ namespace draft_assignment
 
             // Creating a dictionary, to store customer information
             Dictionary<int, Customer> customerDic = new Dictionary<int, Customer>();
-            
+            ReadCustomerCSV(customerDic);
 
             // Creating a dictionary, to store Order information
             Dictionary<int, Order> OrderDic = new Dictionary<int, Order>();
@@ -52,12 +52,12 @@ namespace draft_assignment
                         }
                         else if (opt == 2)
                         {
-                            ListAllCurrentOrders(customerDic,regularqueue, Goldqueue);
+                            //ListAllCurrentOrders(customerDic,regularqueue, Goldqueue);
 
                         }
                         else if (opt == 3)
                         {
-                            AddCustomerToCSV();
+                            AddCustomerToCSV(customerDic);
                         }
                         else if (opt == 4)
                         {
@@ -133,7 +133,7 @@ namespace draft_assignment
                         {
 
                             string name = parts[0];
-                            int id = int.Parse(parts[1]);
+                            int id = Convert.ToInt32(parts[1]);
                             DateTime dob = DateTime.Parse(parts[2]);
                             string tier = parts[3];
                             int points = int.Parse(parts[4]);
@@ -145,13 +145,14 @@ namespace draft_assignment
                         }
                     }
                 }
-                catch (FileNotFoundException)
+                catch (FileNotFoundException ex)
                 {
-                    Console.WriteLine("File not found.");
+                    Console.WriteLine($"File not found: {ex.Message}");
                 }
-                catch (Exception)
+                catch (Exception ex)
                 {
-                    Console.WriteLine("Error reading file.");
+                    Console.WriteLine($"Error reading file: {ex.Message}");
+                    Console.WriteLine(ex.StackTrace);
                 }
             }
         }
@@ -212,7 +213,6 @@ namespace draft_assignment
         // Option 1 of listing the customers
         public static void ListAllCustomers(Dictionary<int, Customer> customerDic)
         {
-            ReadCustomerCSV(customerDic);
             Console.WriteLine($" {"Name",-10} {"ID",-10} {"DOB",-15} {"Membership",-20} {"Points",-10} {"PunchCard",-10}");
             foreach (Customer customer in customerDic.Values)
             {
@@ -258,7 +258,7 @@ namespace draft_assignment
         }
 
         // Option 3  Register a new customer
-        public static void AddCustomerToCSV()
+        public static void AddCustomerToCSV(Dictionary<int, Customer> customerDic)
         {
             while (true)
             {
@@ -288,6 +288,8 @@ namespace draft_assignment
                         Tier = "Ordinary"
                     };
                     newCustomer.Rewards = newPointCard;
+                    customerDic.Add(memberid, newCustomer);
+
                     // Intialisng path for customers.csv
                     string filePath = "customers.csv";
                     using (StreamWriter sw = new StreamWriter(filePath, true))
