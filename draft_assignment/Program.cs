@@ -52,7 +52,7 @@ namespace draft_assignment
                         }
                         else if (opt == 2)
                         {
-                            //ListAllCurrentOrders(customerDic,regularqueue, Goldqueue);
+                            ListAllCurrentOrders(customerDic,regularqueue, Goldqueue);
 
                         }
                         else if (opt == 3)
@@ -119,7 +119,7 @@ namespace draft_assignment
         // Read and store data from customer.csv file. (Dictionary)
         public static void ReadCustomerCSV(Dictionary<int, Customer> customerDic)
         {
-            using (StreamReader sr = new StreamReader("customers.csv"))
+            using (StreamReader sr = new StreamReader("draft_customers.csv"))
             {
                 // Handle a exception if file not found
                 try
@@ -253,7 +253,7 @@ namespace draft_assignment
             }
             else
             {
-                Console.WriteLine(" Currently no orders in the {queueType}");
+                Console.WriteLine($" Currently no orders in the {queueType}");
             }
         }
 
@@ -267,19 +267,34 @@ namespace draft_assignment
                     // Getting user credentials 
                     Console.Write(" Please enter your name: ");
                     string name = Console.ReadLine();
-                    Console.Write(" Please enter id number: ");
-                    int memberid = int.Parse(Console.ReadLine());
-                    if (memberid < 0)
+                    int memberid;
+                    DateTime dob;
+                    while (true)
                     {
-                        Console.WriteLine(" Please a enter a valid MemeberID that is greater than 0\n");
-                        continue;
+                        Console.Write(" Please enter member id number: ");
+                        memberid = int.Parse(Console.ReadLine());
+                        if (memberid < 0)
+                        {
+                            Console.WriteLine(" Please a enter a valid MemeberID that is greater than 0\n");
+                            continue;
+                        }
+                        else if (customerDic.ContainsKey(memberid))
+                        {
+                            Console.WriteLine(" Member ID have been already used. \n");
+                            continue;
+                        }
+                        break;
                     }
-                    Console.Write(" Please enter your date of birth (MM/dd//yyyy): ");
-                    DateTime dob = DateTime.Parse(Console.ReadLine());
-                    if (dob > DateTime.Now)
+                    while (true)
                     {
-                        Console.WriteLine(" Please enter a valid date of birth.\n");
-                        continue;
+                        Console.Write(" Please enter your date of birth (MM/dd//yyyy): ");
+                        dob = DateTime.Parse(Console.ReadLine());
+                        if (dob > DateTime.Now)
+                        {
+                            Console.WriteLine(" Please enter a valid date of birth.\n");
+                            continue;
+                        }
+                        break;
                     }
                     // Creating a new customer
                     Customer newCustomer = new Customer(name, memberid, dob);
@@ -291,11 +306,11 @@ namespace draft_assignment
                     customerDic.Add(memberid, newCustomer);
 
                     // Intialisng path for customers.csv
-                    string filePath = "customers.csv";
+                    string filePath = "draft_customers.csv";
                     using (StreamWriter sw = new StreamWriter(filePath, true))
                     {
                         // Format the customer information as a CSV line
-                        string customerLine = $"{newCustomer.Name},{newCustomer.Memberid},{newCustomer.Dob:MM/dd/yyyy},{newCustomer.Rewards.Tier},{newCustomer.Rewards.Points},{newCustomer.Rewards.PunchCard}";
+                        string customerLine = $"{newCustomer.Name},{newCustomer.Memberid},{newCustomer.Dob:dd/MM/yyyy},{newCustomer.Rewards.Tier},{newCustomer.Rewards.Points},{newCustomer.Rewards.PunchCard}";
                         sw.WriteLine(customerLine);
                     }
                     Console.WriteLine(" Successfully created");
