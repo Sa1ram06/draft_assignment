@@ -55,7 +55,7 @@ namespace draft_assignment
         }
         public override string ToString()
         {
-            return base.ToString() + $" Waffle flavour: {WaffleFlavour,-10}";
+            return base.ToString() + $" \n  - Waffle flavour: {WaffleFlavour,-10}";
         }
     }
 }

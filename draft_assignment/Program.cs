@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics.Eventing.Reader;
 using System.Globalization;
 using System.IO;
 using System.Linq;
@@ -17,11 +18,11 @@ namespace draft_assignment
 
             // Creating Queue (First-In-First-Out)
             Queue<Customer> regularqueue = new Queue<Customer>();
-            Queue<Customer> Goldquue = new Queue<Customer>();
+            Queue<Customer> Goldqueue = new Queue<Customer>();
 
             // Creating a dictionary, to store customer information
             Dictionary<int, Customer> customerDic = new Dictionary<int, Customer>();
-            ReadCustomerCSV(customerDic);
+            
 
             // Creating a dictionary, to store Order information
             Dictionary<int, Order> OrderDic = new Dictionary<int, Order>();
@@ -36,6 +37,7 @@ namespace draft_assignment
                 try
                 {
                     int opt = int.Parse(Console.ReadLine());
+                    Console.WriteLine(" -----------------------------------------");
                     if (opt >= 0 && opt <= 8)
                     {
                         if (opt == 0)
@@ -50,7 +52,7 @@ namespace draft_assignment
                         }
                         else if (opt == 2)
                         {
-                            ListAllCurrentOrders(customerDic);
+                            ListAllCurrentOrders(customerDic,regularqueue, Goldqueue);
 
                         }
                         else if (opt == 3)
@@ -59,7 +61,7 @@ namespace draft_assignment
                         }
                         else if (opt == 4)
                         {
-                            // Call method for option 4
+                            NewCustomerOrder(customerDic, regularqueue, Goldqueue);
                         }
                         else if (opt == 5)
                         {
@@ -100,7 +102,7 @@ namespace draft_assignment
         // Display MenU 
         public static void DisplayMenu()
         {
-            Console.WriteLine("----------------M E N U------------------");
+            Console.WriteLine("\n ----------------M E N U------------------");
             Console.WriteLine(" [1] List all customers");
             Console.WriteLine(" [2] List all current orders");
             Console.WriteLine(" [3] Register a new customer");
@@ -110,7 +112,7 @@ namespace draft_assignment
             Console.WriteLine(" [7] Process an order and checkout");
             Console.WriteLine(" [8] Display monthly charged amounts breakdown & total charged amount for the year");
             Console.WriteLine(" [0] Exit");
-            Console.WriteLine("-----------------------------------------");
+            Console.WriteLine(" -----------------------------------------");
         }
 
 
@@ -210,42 +212,51 @@ namespace draft_assignment
         // Option 1 of listing the customers
         public static void ListAllCustomers(Dictionary<int, Customer> customerDic)
         {
-            Console.WriteLine($"{"Name",-10} {"ID",-10} {"DOB",-15} {"Membership",-20} {"Points",-10} {"PunchCard",-10}");
+            ReadCustomerCSV(customerDic);
+            Console.WriteLine($" {"Name",-10} {"ID",-10} {"DOB",-15} {"Membership",-20} {"Points",-10} {"PunchCard",-10}");
             foreach (Customer customer in customerDic.Values)
             {
                 Console.WriteLine(customer.ToString() + $" {customer.Rewards.Tier,-20} {customer.Rewards.Points,-10} {customer.Rewards.PunchCard,-10}");
             }
         }
         // Option 2 of listing the customers' order
-        public static void ListAllCurrentOrders(Dictionary<int, Customer> customerDic)
+        public static void ListAllCurrentOrders(Dictionary<int, Customer> customerDic,Queue<Customer> regularQueue, Queue<Customer> goldQueue)
         {
-            foreach (Customer customer in customerDic.Values)
+            
+            DisplayOrdersFromQueue("Regular Member Queue", regularQueue);
+            DisplayOrdersFromQueue("Gold Member Queue", goldQueue);
+        }
+        public static void DisplayOrdersFromQueue(string queueType, Queue<Customer> queue)
+        {
+            int orderNumber = 1;
+            if(queue.Count > 0)
             {
-                if (customer.CurrentOrder != null)
+                Console.WriteLine($"\n --------------------------------{queueType}----------------------------------");
+                foreach (Customer customer in queue)
                 {
-                    string membershipStatus = customer.Rewards.Tier;
+                    Console.WriteLine($" ------------------------Order #{orderNumber}------------------------------");
+                    Console.WriteLine($" Customer Name: {customer.Name}");
+                    Console.WriteLine($" Member ID: {customer.Memberid}");
+                    Console.WriteLine($" DOB: {customer.Dob.ToString("dd/MM/yyyy")}");
 
-                    Console.WriteLine($"Customer Name: {customer.Name}");
-                    Console.WriteLine($"Member ID: {customer.Memberid}");
-                    Console.WriteLine($"DOB: {customer.Dob.ToString("dd/MM/yyyy")}");
-
-                    if (membershipStatus == "Gold")
-                    {
-                        Console.WriteLine("Gold Member Queue:");
-                    }
-                    else
-                    {
-                        Console.WriteLine("Regular Member Queue:");
-                    }
-
+                    int iceCreamNumber = 1;
                     foreach (IceCream iceCream in customer.CurrentOrder.IceCreamList)
                     {
+                        Console.WriteLine($"-----#{iceCreamNumber} IceCream-------");
                         Console.WriteLine(iceCream.ToString());
-                        Console.WriteLine(); // Move to the next line for the next order
+                        iceCreamNumber++;
                     }
+
+                    Console.WriteLine($" -------------------------------------------------------------------------");
+                    orderNumber++;
                 }
             }
+            else
+            {
+                Console.WriteLine(" Currently no orders in the {queueType}");
+            }
         }
+
         // Option 3  Register a new customer
         public static void AddCustomerToCSV()
         {
@@ -303,7 +314,32 @@ namespace draft_assignment
             }
         }
         // Option 4 Create a customer’s order
+        public static void NewCustomerOrder(Dictionary<int, Customer> customerDic, Queue<Customer> regularQueue, Queue<Customer> goldQueue)
+        {
+            // Step 1: List the customers from the customers.csv
+            ListAllCustomers(customerDic);
 
+            Console.Write("\n Please enter the customer ID that you wish to select: ");
+            int id = int.Parse(Console.ReadLine());
+
+            if (customerDic.ContainsKey(id))
+            {
+                Customer customer = customerDic[id];    
+                Order newOrder = customer.MakeOrder();
+                customer.CurrentOrder = newOrder;
+                if (customer.Rewards.Tier == "Gold")
+                {
+                    goldQueue.Enqueue(customer);
+                }
+                else
+                {
+                    regularQueue.Enqueue(customer);
+                }
+            }
+            else
+            {
+                Console.WriteLine(" Invalid customer ID. Please enter a valid ID.");
+            }
+        }
     }
 }
-                    

@@ -60,7 +60,7 @@ namespace draft_assignment
         }
         public override string ToString()
         {
-            return base.ToString() + $"Dipped: {Dipped,-10}";
+            return base.ToString() + $" \n  - Dipped: {Dipped,-10}";
         }
     }
 }
