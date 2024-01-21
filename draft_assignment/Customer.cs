@@ -55,8 +55,8 @@ namespace draft_assignment
                     {
                         Console.WriteLine("\n ---------Option-------------");
                         Console.Write(" Enter the Ice cream option (Cup/Cone/Waffle): ");
-                        option = (Console.ReadLine().ToUpper());
-                        if (option == "CUP" || option == "CONE" || option == "WAFFLE")
+                        option = Console.ReadLine();
+                        if (option == "Cup" || option == "Cone" || option == "Waffle")
                         {
                             break;
                         }
@@ -71,7 +71,7 @@ namespace draft_assignment
                         Console.WriteLine("\n ---------Scoop-------------");
                         Console.Write(" Enter the number of scoops (not more than 3): ");
                         scoops = int.Parse(Console.ReadLine());
-                        if (scoops >=  1 && scoops <= 3)
+                        if (scoops >= 1 && scoops <= 3)
                         {
                             break;
                         }
@@ -83,7 +83,7 @@ namespace draft_assignment
                     }
                     List<Flavour> flavourlist = new List<Flavour>();
                     List<string> regularflavours = new List<string> { "VANILLA", "CHOCOLATE", "STRAWBERRY" };
-                    List<string> premiumflavours = new List<string> { "DURIAN", "UBE", "SEA SALT" };
+                    List<string> premiumflavours = new List<string> { "DURAIM", "UBE", "SEA SALT" };
                     while (true)
                     {
                         Console.WriteLine("\n ---------Flavours-------------");
@@ -100,8 +100,8 @@ namespace draft_assignment
                     {
                         Console.Write($" Enter the flavour {i} you would like to add: ");
                         string flavour = Console.ReadLine();
-                        bool premium = premiumflavours.Contains(flavour);
-                        if (!(regularflavours.Contains(flavour.ToUpper()) || premiumflavours.Contains(flavour.ToUpper())))
+                        bool premium = premiumflavours.Contains(flavour.ToUpper());
+                        if (!(regularflavours.Contains(flavour.ToUpper()) || premiumflavours.Contains(flavour)))
                         {
                             Console.WriteLine(" Please provide a valid flavour.\n");
                             i--;
@@ -119,7 +119,7 @@ namespace draft_assignment
                         Console.Write(" Enter the number of toppings you would like to add: ");
                         int numberOfToppings = int.Parse(Console.ReadLine());
 
-                        if (numberOfToppings >= 0 && numberOfToppings <= toppingslist.Count)
+                        if (numberOfToppings <= 4 && numberOfToppings >= 0)
                         {
                             for (int i = 1; i <= numberOfToppings; i++)
                             {
@@ -133,7 +133,7 @@ namespace draft_assignment
                                 else
                                 {
                                     Console.WriteLine(" Enter a valid topping.\n");
-                                    i--;  
+                                    i--;
                                 }
                             }
                             break;
@@ -174,14 +174,14 @@ namespace draft_assignment
                     }
                     else if (option == "Waffle")
                     {
-                        List<string> waffleFlavoursAvailable = new List<string> { "RED VELVET", "CHARCOAL", "PANDAM" };
+                        List<string> waffleFlavoursAvailable = new List<string> { "Red velvet", "charcoal", "Pandan" };
                         while (true)
                         {
                             Console.WriteLine("\n ---------Waffle Flavour-------------");
                             Console.Write(" Enter the waffle flavour you would like: ");
                             string waffleFlavour = Console.ReadLine();
 
-                            if (waffleFlavoursAvailable.Contains(waffleFlavour.ToUpper()))
+                            if (waffleFlavoursAvailable.Contains(waffleFlavour))
                             {
                                 IceCream iceCreamWaffle = new Waffle(option, scoops, flavourlist, toppingslist, waffleFlavour);
                                 newOrder.AddIceCream(iceCreamWaffle);
@@ -217,7 +217,7 @@ namespace draft_assignment
                         }
                     }
                 }
-                catch (FormatException) 
+                catch (FormatException)
                 {
                     Console.WriteLine(" Invalid input! please try again.\n");
                 }
@@ -226,9 +226,9 @@ namespace draft_assignment
                     Console.WriteLine($" Error occurred: {ex.Message}\n");
                 }
             }
-            CurrentOrder = newOrder;
-            OrderHistory.Add(CurrentOrder);
-            return CurrentOrder;
+            OrderHistory.Add(newOrder);
+            return newOrder;
+
         }
         public bool IsBirthday()
         {

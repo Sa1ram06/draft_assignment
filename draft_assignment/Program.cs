@@ -177,8 +177,8 @@ namespace draft_assignment
                             DateTime timefullfiled = DateTime.Parse(parts[3]);
                             string option = parts[4];
                             int scoops = int.Parse(parts[5]);
-                            bool dipped = bool.Parse(parts[6]);
-                            string waffleFlavour = parts[7];
+                            bool dipped;
+                            string waffleFlavour = null;
                             List<string> flavours = new List<string> { parts[8], parts[9], parts[10] };
                             List<string> toppings = new List<string> { parts[11], parts[12], parts[13], parts[14] };
                             List<string> regularflavours = new List<string> { "VANILLA", "CHOCOLATE", "STRAWBERRY" };
@@ -187,22 +187,34 @@ namespace draft_assignment
                             // Checking if the flavours are premium
                             foreach (string flavour in flavours)
                             {
-                                if (premiumflavours.Contains(flavour.ToUpper()))
+                                if (!string.IsNullOrEmpty(flavour))
                                 {
-                                    ispremium = true;
+                                    if (premiumflavours.Contains(flavour.ToUpper()))
+                                    {
+                                        ispremium = true;
+                                    }
+                                    else
+                                    {
+                                        ispremium = false;
+                                    }
+                                    orderedFlavourlist.Add(new Flavour(flavour, ispremium, 1));
                                 }
-                                else
-                                {
-                                    ispremium = false;
-                                }
-                                orderedFlavourlist.Add(new Flavour(flavour, ispremium, 1));
                             }
-                            foreach(string topping in toppings)
+
+                            foreach (string topping in toppings)
                             {
-                                orderedtoppinglist.Add(new Topping(topping));
+                                if (!string.IsNullOrEmpty(topping))
+                                {
+                                    orderedtoppinglist.Add(new Topping(topping));
+                                }
+                                   
                             }
                             // Creating new IceCream
-                            Order order = new Order(orderId, timerecieved);
+                            Order order = new Order(orderId, timerecieved)
+                            {
+                                TimeFulfilled = timefullfiled
+                            };
+
                             if (option == "Cup")
                             {
                                 IceCream icecream = new Cup(option, scoops, orderedFlavourlist, orderedtoppinglist);
@@ -210,11 +222,13 @@ namespace draft_assignment
                             }
                             else if (option == "Cone")
                             {
+                                dipped = bool.Parse(parts[6]);
                                 IceCream icecream = new Cone(option, scoops, orderedFlavourlist, orderedtoppinglist, dipped);
                                 order.AddIceCream(icecream);
                             }
                             else if (option == "Waffle")
                             {
+                                waffleFlavour = parts[7];
                                 IceCream icecream = new Waffle(option, scoops, orderedFlavourlist, orderedtoppinglist, waffleFlavour);
                                 order.AddIceCream(icecream);
                             }
@@ -428,25 +442,22 @@ namespace draft_assignment
                 Customer customer = customerDic[id];
                 Console.WriteLine($" Order details for {customer.Name} (Customer ID: {customer.Memberid})");
 
-                // Step 3: Retrieve all order objects of the customer
                 foreach (Order order in customer.OrderHistory)
                 {
-                    Console.WriteLine($"Order ID: {order.Id}");
-                    Console.WriteLine($"Time Received: {order.TimeReceived}");
-
-                    if (order.TimeFulfilled.HasValue)
-                    {
-                        Console.WriteLine($"Time Fulfilled: {order.TimeFulfilled}");
-                    }
-                    else
-                    {
-                        Console.WriteLine("Order not fulfilled yet.");
-                    }
-
-                    // Step 4: Display all ice cream details associated with the order
+                    Console.WriteLine($" \nOrder ID: {order.Id}");
                     foreach (IceCream iceCream in order.IceCreamList)
                     {
                         Console.WriteLine(iceCream.ToString());
+                    }
+                    Console.WriteLine($" Time Received: {order.TimeReceived}");
+
+                    if (order.TimeFulfilled != null)
+                    {
+                        Console.WriteLine($" Time Fulfilled: {order.TimeFulfilled}");
+                    }
+                    else
+                    {
+                        Console.WriteLine(" Order not fulfilled yet.");
                     }
                 }
             }
