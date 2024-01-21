@@ -55,8 +55,8 @@ namespace draft_assignment
                     {
                         Console.WriteLine("\n ---------Option-------------");
                         Console.Write(" Enter the Ice cream option (Cup/Cone/Waffle): ");
-                        option = Console.ReadLine();
-                        if (option == "Cup" || option == "Cone" || option == "Waffle")
+                        option = Console.ReadLine().ToUpper();
+                        if (option == "CUP" || option == "CONE" || option == "WAFFLE")
                         {
                             break;
                         }
@@ -145,12 +145,12 @@ namespace draft_assignment
                     }
 
 
-                    if (option == "Cup")
+                    if (option == "CUP")
                     {
                         IceCream IceCreamCup = new Cup(option, scoops, flavourlist, toppingslist);
                         newOrder.AddIceCream(IceCreamCup);
                     }
-                    else if (option == "Cone")
+                    else if (option == "CONE")
                     {
                         Console.WriteLine("\n ---------Dipped-------------");
                         Console.Write(" Would you like to have chocolate dipped cone [Y/N]: ");
@@ -172,7 +172,7 @@ namespace draft_assignment
                         IceCream IceCreamCone = new Cone(option, scoops, flavourlist, toppingslist, dipped);
                         newOrder.AddIceCream(IceCreamCone);
                     }
-                    else if (option == "Waffle")
+                    else if (option == "WAFFLE")
                     {
                         List<string> waffleFlavoursAvailable = new List<string> { "Red velvet", "charcoal", "Pandan" };
                         while (true)
