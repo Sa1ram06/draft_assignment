@@ -23,7 +23,7 @@ namespace draft_assignment
             // Creating a dictionary, to store customer information
             Dictionary<int, Customer> customerDic = new Dictionary<int, Customer>();
             ReadCustomerCSV(customerDic);
-
+            ReadOrderCSV(customerDic);
 
             while (true)
             {
@@ -62,7 +62,6 @@ namespace draft_assignment
                         }
                         else if (opt == 5)
                         {
-                            ReadOrderCSV(customerDic);
                             DisplayOrderDetails(customerDic);
                         }
                         else if (opt == 6)
