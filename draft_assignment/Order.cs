@@ -25,7 +25,7 @@ namespace draft_assignment
         // Declaring parameterized constructor
         public Order(int id, DateTime timerecived)
         {
-            id = Id;
+            Id = id;
             TimeReceived = timerecived;
         }
         // Methods

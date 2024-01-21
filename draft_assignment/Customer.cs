@@ -55,8 +55,8 @@ namespace draft_assignment
                     {
                         Console.WriteLine("\n ---------Option-------------");
                         Console.Write(" Enter the Ice cream option (Cup/Cone/Waffle): ");
-                        option = Console.ReadLine();
-                        if (option == "Cup" || option == "Cone" || option == "Waffle")
+                        option = (Console.ReadLine().ToUpper());
+                        if (option == "CUP" || option == "CONE" || option == "WAFFLE")
                         {
                             break;
                         }
@@ -82,8 +82,8 @@ namespace draft_assignment
                         }
                     }
                     List<Flavour> flavourlist = new List<Flavour>();
-                    List<string> regularflavours = new List<string> { "Vanilla", "Chocolate", "Strawberry" };
-                    List<string> premiumflavours = new List<string> { "Durian", "Ube", "Sea salt" };
+                    List<string> regularflavours = new List<string> { "VANILLA", "CHOCOLATE", "STRAWBERRY" };
+                    List<string> premiumflavours = new List<string> { "DURIAN", "UBE", "SEA SALT" };
                     while (true)
                     {
                         Console.WriteLine("\n ---------Flavours-------------");
@@ -101,7 +101,7 @@ namespace draft_assignment
                         Console.Write($" Enter the flavour {i} you would like to add: ");
                         string flavour = Console.ReadLine();
                         bool premium = premiumflavours.Contains(flavour);
-                        if (!(regularflavours.Contains(flavour) || premiumflavours.Contains(flavour)))
+                        if (!(regularflavours.Contains(flavour.ToUpper()) || premiumflavours.Contains(flavour.ToUpper())))
                         {
                             Console.WriteLine(" Please provide a valid flavour.\n");
                             i--;
@@ -112,21 +112,21 @@ namespace draft_assignment
 
 
                     List<Topping> toppingslist = new List<Topping>();
-                    List<string> ToppingsAvailable = new List<string> { "Sprinkles", "Mochi", "Sago", "Oreos" };
+                    List<string> ToppingsAvailable = new List<string> { "SPRINKLES", "MOCHI", "SAGO", "OREOS" };
                     while (true)
                     {
                         Console.WriteLine("\n ---------Toppings-------------");
                         Console.Write(" Enter the number of toppings you would like to add: ");
                         int numberOfToppings = int.Parse(Console.ReadLine());
 
-                        if (numberOfToppings <= 4)
+                        if (numberOfToppings >= 0 && numberOfToppings <= toppingslist.Count)
                         {
                             for (int i = 1; i <= numberOfToppings; i++)
                             {
                                 Console.Write($" Enter the topping {i} you would like to add: ");
                                 string topping = Console.ReadLine();
 
-                                if (ToppingsAvailable.Contains(topping))
+                                if (ToppingsAvailable.Contains(topping.ToUpper()))
                                 {
                                     toppingslist.Add(new Topping(topping));
                                 }
@@ -174,14 +174,14 @@ namespace draft_assignment
                     }
                     else if (option == "Waffle")
                     {
-                        List<string> waffleFlavoursAvailable = new List<string> { "Red velvet", "charcoal", "Pandan" };
+                        List<string> waffleFlavoursAvailable = new List<string> { "RED VELVET", "CHARCOAL", "PANDAM" };
                         while (true)
                         {
                             Console.WriteLine("\n ---------Waffle Flavour-------------");
                             Console.Write(" Enter the waffle flavour you would like: ");
                             string waffleFlavour = Console.ReadLine();
 
-                            if (waffleFlavoursAvailable.Contains(waffleFlavour))
+                            if (waffleFlavoursAvailable.Contains(waffleFlavour.ToUpper()))
                             {
                                 IceCream iceCreamWaffle = new Waffle(option, scoops, flavourlist, toppingslist, waffleFlavour);
                                 newOrder.AddIceCream(iceCreamWaffle);
