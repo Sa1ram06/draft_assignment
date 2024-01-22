@@ -8,6 +8,7 @@ using System;
 using System.Diagnostics.Eventing.Reader;
 using System.Linq.Expressions;
 using System.Runtime.InteropServices;
+using System.Linq;
 
 namespace draft_assignment
 {
@@ -82,33 +83,54 @@ namespace draft_assignment
                         }
                     }
                     List<Flavour> flavourlist = new List<Flavour>();
+                    List<string> chosenFlavours = new List<string>();
                     List<string> regularflavours = new List<string> { "VANILLA", "CHOCOLATE", "STRAWBERRY" };
-                    List<string> premiumflavours = new List<string> { "DURAIM", "UBE", "SEA SALT" };
+                    List<string> premiumflavours = new List<string> { "DURIAN", "UBE", "SEA SALT" };
+
                     while (true)
                     {
                         Console.WriteLine("\n ---------Flavours-------------");
                         Console.Write(" Enter the number of flavours you would like to add: ");
                         int numberOfFlavours = int.Parse(Console.ReadLine());
+
                         if (numberOfFlavours > 0 && numberOfFlavours <= scoops)
                         {
-                            break;
+                            for (int i = 1; i <= scoops; i++)
+                            {
+                                Console.Write($" Enter the flavour {i} you would like to add: ");
+                                string flavour = Console.ReadLine();
+                                bool premium = premiumflavours.Contains(flavour.ToUpper());
+
+                                if (!(regularflavours.Contains(flavour.ToUpper()) || premiumflavours.Contains(flavour.ToUpper())))
+                                {
+                                    Console.WriteLine(" Please provide a valid flavour.\n");
+                                    i--; // Decrement i to re-enter the current iteration
+                                    continue;
+                                }
+
+                                chosenFlavours.Add(flavour);
+                                flavourlist.Add(new Flavour(flavour, premium, 1));
+                            }
+
+                            if (chosenFlavours.Distinct().Count() == numberOfFlavours)
+                            {
+                                break; // Exit the loop if the correct number of flavours has been entered
+                            }
+                            else
+                            {
+                                Console.WriteLine($" You entered {chosenFlavours.Distinct().Count()} distinct flavours, but you specified {numberOfFlavours} flavours. Please provide the correct number of distinct flavours.");
+                                // Clear the lists to start again
+                                chosenFlavours.Clear();
+                                flavourlist.Clear();
+                            }
                         }
-                        Console.WriteLine($" You can only add between 1 to {scoops} flavours.\n");
+                        else
+                        {
+                            Console.WriteLine($" You can only add between 1 to {scoops} flavours.\n");
+                        }
                     }
 
-                    for (int i = 1; i <= scoops; i++)
-                    {
-                        Console.Write($" Enter the flavour {i} you would like to add: ");
-                        string flavour = Console.ReadLine();
-                        bool premium = premiumflavours.Contains(flavour.ToUpper());
-                        if (!(regularflavours.Contains(flavour.ToUpper()) || premiumflavours.Contains(flavour)))
-                        {
-                            Console.WriteLine(" Please provide a valid flavour.\n");
-                            i--;
-                            continue;
-                        }
-                        flavourlist.Add(new Flavour(flavour, premium, 1));
-                    }
+
 
 
                     List<Topping> toppingslist = new List<Topping>();

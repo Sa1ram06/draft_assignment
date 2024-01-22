@@ -20,6 +20,8 @@ namespace draft_assignment
         // Declaring default constructor List
         public Order()
         {
+            Random r = new Random();
+            Id = r.Next(1, 100);
             TimeReceived = DateTime.Now;
         }
         // Declaring parameterized constructor

@@ -66,7 +66,7 @@ namespace draft_assignment
                         }
                         else if (opt == 6)
                         {
-                            // Call method for option 6
+                            ModifyOrderDetails(customerDic, regularqueue, Goldqueue);
                         }
                         else if (opt == 7)
                         {
@@ -88,9 +88,9 @@ namespace draft_assignment
                     Console.WriteLine(" Invalid input! Please enter a valid integer between 0 and 8");
 
                 }
-                catch (Exception)
+                catch (Exception ex)
                 {
-                    Console.WriteLine("Invalid input! Please enter a valid integer.");
+                    Console.WriteLine($"{ex.Message}");
                 }
 
             }
@@ -144,12 +144,11 @@ namespace draft_assignment
                 }
                 catch (FileNotFoundException ex)
                 {
-                    Console.WriteLine($"File not found: {ex.Message}");
+                    Console.WriteLine($" File not found: {ex.Message}");
                 }
                 catch (Exception ex)
                 {
                     Console.WriteLine($"Error reading file: {ex.Message}");
-                    Console.WriteLine(ex.StackTrace);
                 }
             }
         }
@@ -252,10 +251,6 @@ namespace draft_assignment
             {
                 Console.WriteLine("Error parsing data. Check the format in the CSV file.");
             }
-            catch (IndexOutOfRangeException)
-            {
-                Console.WriteLine("Error reading data. Make sure each line in the CSV file has the correct number of columns.");
-            }
             catch (Exception)
             {
                 Console.WriteLine("Error reading file.");
@@ -281,13 +276,13 @@ namespace draft_assignment
         }
         public static void DisplayOrdersFromQueue(string queueType, Queue<Customer> queue)
         {
-            int orderNumber = 1;
+            
             if (queue.Count > 0)
             {
                 Console.WriteLine($"\n --------------------------------{queueType}----------------------------------");
                 foreach (Customer customer in queue)
                 {
-                    Console.WriteLine($" ------------------------Order #{orderNumber}------------------------------");
+                    Console.WriteLine($" ------------------------Order #{customer.CurrentOrder.Id}------------------------------");
                     Console.WriteLine($" Customer Name: {customer.Name}");
                     Console.WriteLine($" Member ID: {customer.Memberid}");
                     Console.WriteLine($" DOB: {customer.Dob.ToString("dd/MM/yyyy")}");
@@ -298,10 +293,11 @@ namespace draft_assignment
                         Console.WriteLine($"-----#{iceCreamNumber} IceCream-------");
                         Console.WriteLine(iceCream.ToString());
                         iceCreamNumber++;
+                        Console.WriteLine("-----------------------");
                     }
 
                     Console.WriteLine($" -------------------------------------------------------------------------");
-                    orderNumber++;
+                    
                 }
             }
             else
@@ -431,7 +427,6 @@ namespace draft_assignment
         // Option 5 Display order details of customer
         public static void DisplayOrderDetails(Dictionary<int, Customer> customerDic)
         {
-            // Step 1: List the customers from the customers.csv
             ListAllCustomers(customerDic);
 
             Console.Write("\n Please enter the customer ID that you wish to select: ");
@@ -465,6 +460,68 @@ namespace draft_assignment
                 Console.WriteLine(" Invalid customer ID. Please enter a valid ID.");
             }
         }
-        
+        // Option 5 Display order details of customer
+        public static void ModifyOrderDetails(Dictionary<int, Customer> customerDic, Queue<Customer> regularQueue, Queue<Customer> goldQueue)
+        {
+            ListAllCustomers(customerDic);
+            Console.Write("\n Please enter the customer ID that you wish to select: ");
+            int id = int.Parse(Console.ReadLine());
+            if (customerDic.ContainsKey(id))
+            {
+                Customer customer = customerDic[id];
+                Order orders = customer.CurrentOrder;
+                if (orders != null)
+                {
+                    int iceCreamNumber = 1;
+                    foreach (IceCream iceCream in customer.CurrentOrder.IceCreamList)
+                    {
+                        Console.WriteLine($"\n-----#{iceCreamNumber} IceCream-------");
+                        Console.WriteLine(iceCream.ToString());
+                        iceCreamNumber++;
+                        Console.WriteLine("-----------------------\n");
+                        DisplayMenuOpt6();
+                        Console.Write(" Enter the option: ");
+                        int opt = int.Parse(Console.ReadLine());
+                        if (opt == 0)
+                        {
+                            break;
+                        }
+                        else if (opt == 1)
+                        {
+                           
+                        }
+                        else if (opt == 2)
+                        {
+                            Order newOrder = customer.MakeOrder();
+                            customer.CurrentOrder = newOrder;
+                            if (customer.Rewards.Tier == "Gold")
+                            {
+                                goldQueue.Enqueue(customer);
+                            }
+                            else
+                            {
+                                regularQueue.Enqueue(customer);
+                            }
+                        }
+                    }
+                }
+                else
+                {
+                    Console.WriteLine($" {customer.Name} has no current orders.");
+                }
+            }
+            else
+            {
+                Console.WriteLine(" Invalid customer ID. Please enter a valid ID.");
+            }
+        }
+        public static void DisplayMenuOpt6()
+        {
+            Console.WriteLine(" [1] Modify an IceCream");
+            Console.WriteLine(" [2] Add new an IceCream");
+            Console.WriteLine(" [3] Delete an IceCream");
+            Console.WriteLine(" [4] Exit");
+
+        }
     }
 }
