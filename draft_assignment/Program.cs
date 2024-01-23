@@ -33,7 +33,7 @@ namespace draft_assignment
             // Creating a dictionary, to store customer information
             Dictionary<int, Customer> customerDic = new Dictionary<int, Customer>();
             ReadCustomerCSV(customerDic);
-            ReadOrderCSV(customerDic,AvailableFlavourDic);
+            ReadOrderCSV(customerDic, AvailableFlavourDic);
 
 
             while (true)
@@ -70,7 +70,7 @@ namespace draft_assignment
                         }
                         else if (opt == 4)
                         {
-                            NewCustomerOrder(customerDic, regularqueue, Goldqueue, AvailableFlavourDic,AvailableToppingsDic);
+                            NewCustomerOrder(customerDic, regularqueue, Goldqueue, AvailableFlavourDic, AvailableToppingsDic);
                         }
                         else if (opt == 5)
                         {
@@ -78,7 +78,7 @@ namespace draft_assignment
                         }
                         else if (opt == 6)
                         {
-                            ModifyOrderDetails(customerDic, regularqueue, Goldqueue);
+                            ModifyOrderDetails(customerDic, regularqueue, Goldqueue, AvailableFlavourDic, AvailableToppingsDic);
                         }
                         else if (opt == 7)
                         {
@@ -108,7 +108,7 @@ namespace draft_assignment
             }
 
         }
-        
+
         // Display Menu 
         public static void DisplayMenu()
         {
@@ -131,7 +131,7 @@ namespace draft_assignment
         {
             using (StreamReader sr = new StreamReader("draft_customers.csv"))
             {
-                
+
                 try
                 {
                     string s = sr.ReadLine(); // skipping the header of the csv file
@@ -171,7 +171,7 @@ namespace draft_assignment
         }
 
         // Read and store data from order.csv file. (Dictionary)
-        public static void ReadOrderCSV(Dictionary<int, Customer> customerDic,Dictionary<string,int> availableflavoursdic)
+        public static void ReadOrderCSV(Dictionary<int, Customer> customerDic, Dictionary<string, int> availableflavoursdic)
         {
             try
             {
@@ -213,7 +213,7 @@ namespace draft_assignment
                                 }
                             }
                             bool ispremium = false; // Initialise premium to false
-                            
+
                             foreach (string flavour in flavours)
                             {
                                 if (!string.IsNullOrEmpty(flavour)) // Check if the value is valid (not nill/empty),
@@ -236,12 +236,12 @@ namespace draft_assignment
                                 {
                                     orderedtoppinglist.Add(new Topping(topping));  // Create a new topping
                                 }
-                                   
+
                             }
-                            
+
                             Order order = new Order(orderId, timerecieved)  // Creating new Order with appropriate parameters
                             {
-                                TimeFulfilled = timefullfiled 
+                                TimeFulfilled = timefullfiled
                             };
 
                             if (option == "Cup") // Creating Cup IceCream with valid information.
@@ -261,7 +261,7 @@ namespace draft_assignment
                                 IceCream icecream = new Waffle(option, scoops, orderedFlavourlist, orderedtoppinglist, waffleFlavour);
                                 order.AddIceCream(icecream); // Appending the created ice cream to the order
                             }
-                            
+
                             if (customerDic.ContainsKey(memberId)) // Check for appropriate customer to add the order
                             {
                                 Customer customer = customerDic[memberId];
@@ -310,7 +310,7 @@ namespace draft_assignment
         // Sub Method for Option 2
         public static void DisplayOrdersFromQueue(string queueType, Queue<Customer> queue)
         {
-            
+
             if (queue.Count > 0) // Ensure there is orders to display
             {
                 Console.WriteLine($"\n --------------------------------{queueType}----------------------------------");
@@ -320,7 +320,7 @@ namespace draft_assignment
                     Console.WriteLine($" Customer Name: {customer.Name}"); // Name
                     Console.WriteLine($" Member ID: {customer.Memberid}"); // Member Id  
                     Console.WriteLine($" DOB: {customer.Dob.ToString("dd/MM/yyyy")}"); // Dob
-                     
+
                     int iceCreamNumber = 1; //initialise the icenumber, To keep record of how many icecreams in each order,
                     foreach (IceCream iceCream in customer.CurrentOrder.IceCreamList)
                     {
@@ -331,7 +331,7 @@ namespace draft_assignment
                     }
 
                     Console.WriteLine($" -------------------------------------------------------------------------");
-                    
+
                 }
             }
             else // No orders in that specified queue, 
@@ -353,12 +353,12 @@ namespace draft_assignment
                     string name = Console.ReadLine();
                     int memberid;
                     DateTime dob;
-                    while (true) 
+                    while (true)
                     {
                         Console.Write(" Please enter member id number: ");
                         memberid = int.Parse(Console.ReadLine());
                         if (memberid < 0) //Validating the memberid ( cannot be less than zero )
-                        { 
+                        {
                             Console.WriteLine(" Please a enter a valid MemeberID that is greater than 0\n");
                             continue;
                         }
@@ -387,7 +387,7 @@ namespace draft_assignment
                     customerDic.Add(memberid, newCustomer); // Adding the new customer to dictionary
 
                     // Intialisng path for customers.csv
-                    string filePath = "draft_customers.csv"; 
+                    string filePath = "draft_customers.csv";
                     // Writing the new customer info to the csv file
                     using (StreamWriter sw = new StreamWriter(filePath, true)) // true, (append)
                     {
@@ -415,7 +415,7 @@ namespace draft_assignment
 
 
         // Option 4 Create a customer’s order
-        public static void NewCustomerOrder(Dictionary<int, Customer> customerDic, Queue<Customer> regularQueue, Queue<Customer> goldQueue, Dictionary<string,int> availableflavoursdic, Dictionary<string, double> availbletoppingsdic)
+        public static void NewCustomerOrder(Dictionary<int, Customer> customerDic, Queue<Customer> regularQueue, Queue<Customer> goldQueue, Dictionary<string, int> availableflavoursdic, Dictionary<string, double> availbletoppingsdic)
         {
             while (true)
             {
@@ -432,26 +432,7 @@ namespace draft_assignment
                         Customer customer = customerDic[id]; // Retrieve the appropriate customer, by their id 
                         Order newOrder = customer.MakeOrder(); // Create a new  order.
                         customer.CurrentOrder = newOrder; // Assigning the new order to the current order
-                        bool orderCompleted = false; // Initialising orderCompleted to false, for CreateIceCream function to recursively happen.
-                         
-                        while (!orderCompleted) // while(true)
-                        {
-                            IceCream iceCream = CreateIceCream(availableflavoursdic, availbletoppingsdic); // Calling the method to create the icecream
-                            newOrder.IceCreamList.Add(iceCream); // Appending the icecream to current order icecream list. 
-                            Console.Write(" Do you want to add another ice cream to your order? (Y/N): "); 
-                            string addAnotherIceCream = Console.ReadLine();
-                            if (addAnotherIceCream.ToUpper() == "N")
-                            {
-                                Console.WriteLine("\n ---------Result-------------");
-                                Console.WriteLine(" Order Successfully created.");
-                                orderCompleted = true; // Order is completed/ if addanotherIceCream == "y", CreateIceCream function runs again
-                            }
-                            else
-                            {
-                                Console.WriteLine(" Invalid input. Please enter 'Y' to add another ice cream or 'N' to finish the order."); // Validation if worng input is given.
-                            }
-                            
-                        }
+                        ProcessIceCreamOrder(newOrder, availableflavoursdic, availbletoppingsdic); // Call in the function,
                         if (customer.Rewards.Tier == "Gold") // Check for the Customer Tier to enqueue the order to that specific queue
                         {
                             goldQueue.Enqueue(customer);
@@ -497,7 +478,7 @@ namespace draft_assignment
                         break;
                     }
                     else
-                    { 
+                    {
                         Console.WriteLine(" Please enter a valid ice cream option (Cup/Cone/Waffle)."); // Error message
                     }
                 }
@@ -516,7 +497,7 @@ namespace draft_assignment
                     while (true)
                     {
                         Console.WriteLine("\n ---------Dipped-------------");
-                        Console.Write(" Would you like to have chocolate dipped cone [Y/N]: "); 
+                        Console.Write(" Would you like to have chocolate dipped cone [Y/N]: ");
                         string ans = Console.ReadLine();
                         bool dipped = false; //Initialising dipped to false.
                         if (ans.ToUpper() == "Y")
@@ -568,7 +549,7 @@ namespace draft_assignment
                 Console.WriteLine(" Invalid input! Please try again.\n");
             }
             catch (Exception ex)  // General exception handling
-            { 
+            {
                 Console.WriteLine($" Error occurred: {ex.Message}\n");
             }
             return iceCream;
@@ -716,30 +697,34 @@ namespace draft_assignment
         {
             using (StreamReader sr = new StreamReader("draft_flavours.csv"))
             {
-                // Handle a exception if file not found
+
                 try
                 {
-                    string s = sr.ReadLine();
+                    string s = sr.ReadLine(); //Skipping header line
                     string line;
                     while ((line = sr.ReadLine()) != null)
                     {
-                        string[] parts = line.Split(',');
+                        string[] parts = line.Split(','); //Splitting by comma
                         if (parts.Length == 2)
                         {
 
                             string name = parts[0];
                             int cost = int.Parse(parts[1]);
-                            AvailableFlavourDic.Add(name, cost);
+                            AvailableFlavourDic.Add(name, cost); //Adding the name (key) cost(value) key value pair
                         }
                     }
                 }
-                catch (FileNotFoundException ex)
+                catch (FileNotFoundException) // Handle a exception if file not found
                 {
-                    Console.WriteLine($" File not found: {ex.Message}");
+                    Console.WriteLine("File not found.");
                 }
-                catch (Exception ex)
+                catch (FormatException) // Handle format exception
                 {
-                    Console.WriteLine($"Error reading file: {ex.StackTrace}");
+                    Console.WriteLine("Error parsing data. Check the format in the CSV file.");
+                }
+                catch (Exception)// General exception handling
+                {
+                    Console.WriteLine("Error reading file.");
                 }
             }
 
@@ -752,37 +737,42 @@ namespace draft_assignment
         {
             using (StreamReader sr = new StreamReader("draft_toppings.csv"))
             {
-                // Handle a exception if file not found
+
                 try
                 {
-                    string s = sr.ReadLine();
+                    string s = sr.ReadLine(); //Skipping the header line
                     string line;
                     while ((line = sr.ReadLine()) != null)
                     {
-                        string[] parts = line.Split(',');
+                        string[] parts = line.Split(','); //Split by comma
                         if (parts.Length == 2)
                         {
 
                             string name = parts[0];
                             double cost = double.Parse(parts[1]);
-                            AvailableToppingsDic.Add(name, cost);
+                            AvailableToppingsDic.Add(name, cost); //Adding the name (key) cost(value) key value pair
                         }
                     }
                 }
-                catch (FileNotFoundException ex)
+                catch (FileNotFoundException) // Handle a exception if file not found
                 {
-                    Console.WriteLine($" File not found: {ex.Message}");
+                    Console.WriteLine("File not found.");
                 }
-                catch (Exception ex)
+                catch (FormatException) // Handle format exception
                 {
-                    Console.WriteLine($"Error reading file: {ex.StackTrace}");
+                    Console.WriteLine("Error parsing data. Check the format in the CSV file.");
                 }
+                catch (Exception)// General exception handling
+                {
+                    Console.WriteLine("Error reading file.");
+                }
+
             }
         }
         // Sub Methods for Method: 07
         public static void DisplayFlavours(Dictionary<string, int> AvailableflavourDic)
         {
-            Console.WriteLine(" \n-----------Flavours Available-------------");
+            Console.WriteLine(" \n-----------Flavours Available-------------"); //Display flavours
             Console.WriteLine($" {"Name",-10} {"Cost",-10}");
             foreach (KeyValuePair<string, int> Kvp in AvailableflavourDic)
             {
@@ -795,7 +785,7 @@ namespace draft_assignment
         // Sub Methods for Method: 06
         public static void DisplayToppings(Dictionary<string, double> AvailableToppingsDic)
         {
-            Console.WriteLine(" \n-----------Toppings Available-------------");
+            Console.WriteLine(" \n-----------Toppings Available-------------"); //Display Toppings
             Console.WriteLine($" {"Name",-10} {"Cost",-10}");
             foreach (KeyValuePair<string, double> Kvp in AvailableToppingsDic)
             {
@@ -804,21 +794,52 @@ namespace draft_assignment
             Console.WriteLine(" ------------------------------------------");
 
         }
+        // Sub Methods for Method: 07
+        private static void ProcessIceCreamOrder(Order newOrder, Dictionary<string, int> availableflavoursdic, Dictionary<string, double> availbletoppingsdic)
+        {
+            bool orderCompleted = false; // Initialising orderCompleted to false, for CreateIceCream function to recursively happen.
+
+            while (!orderCompleted) // while(true)
+            {
+                IceCream iceCream = CreateIceCream(availableflavoursdic, availbletoppingsdic); // Calling the method to create the icecream
+                newOrder.IceCreamList.Add(iceCream); // Appending the icecream to current order icecream list. 
+                Console.Write(" Do you want to add another ice cream to your order? (Y/N): ");
+                string addAnotherIceCream = Console.ReadLine();
+                if (addAnotherIceCream.ToUpper() == "Y")
+                {
+                    continue;
+                }
+                else if (addAnotherIceCream.ToUpper() == "N")
+                {
+                    Console.WriteLine("\n ---------Result-------------");
+                    Console.WriteLine(" Order Successfully created.");
+                    orderCompleted = true; // Order is completed/ if addanotherIceCream == "y", CreateIceCream function runs again
+                }
+                else
+                {
+                    Console.WriteLine(" Invalid input. Please enter 'Y' to add another ice cream or 'N' to finish the order."); // Validation if worng input is given.
+                }
+
+            }
+        }
+
+
+
         // Option 5 Display order details of customer
         public static void DisplayOrderDetails(Dictionary<int, Customer> customerDic)
         {
-            ListAllCustomers(customerDic);
+            ListAllCustomers(customerDic); //List all the customers
 
             Console.Write("\n Please enter the customer ID that you wish to select: ");
             int id = int.Parse(Console.ReadLine());
-            if (customerDic.ContainsKey(id))
+            if (customerDic.ContainsKey(id)) //Validate if there input(customerid) exist in dictionary
             {
-                Customer customer = customerDic[id];
-                if (customer.OrderHistory.Count() > 0)
+                Customer customer = customerDic[id]; //Retrieve the appropriate customer(keu) using the id (value) provided
+                if (customer.OrderHistory.Count() > 0) // Check if customer even got ORder history to display
                 {
                     Console.WriteLine($" Order details for {customer.Name} (Customer ID: {customer.Memberid})");
 
-                    foreach (Order order in customer.OrderHistory)
+                    foreach (Order order in customer.OrderHistory) // Loopp through the order history
                     {
                         Console.WriteLine($" \nOrder ID: {order.Id}");
                         foreach (IceCream iceCream in order.IceCreamList)
@@ -827,7 +848,7 @@ namespace draft_assignment
                         }
                         Console.WriteLine($" Time Received: {order.TimeReceived}");
 
-                        if (order.TimeFulfilled != null)
+                        if (order.TimeFulfilled != null)//CUrrent orders which are added to order history, timefulfilled will be null.
                         {
                             Console.WriteLine($" Time Fulfilled: {order.TimeFulfilled}");
                         }
@@ -839,49 +860,57 @@ namespace draft_assignment
                 }
                 else
                 {
-                    Console.WriteLine($" {customer.Name} has no Order History ");
+                    Console.WriteLine($" {customer.Name} has no Order History "); // Message to display there is no orders for the selected customer
                 }
 
             }
             else
             {
-                Console.WriteLine(" Invalid customer ID. Please enter a valid ID.");
+                Console.WriteLine(" Invalid customer ID. Please enter a valid ID."); // Error message for invalid customer id 
             }
         }
+
         // Option 6 Display order details of customer
-        public static void ModifyOrderDetails(Dictionary<int, Customer> customerDic, Queue<Customer> regularQueue, Queue<Customer> goldQueue)
+        public static void ModifyOrderDetails(Dictionary<int, Customer> customerDic, Queue<Customer> regularQueue, Queue<Customer> goldQueue, Dictionary<string, int> availableflavoursdic, Dictionary<string, double> availbletoppingsdic)
         {
-            ListAllCustomers(customerDic);
+            ListAllCustomers(customerDic); //List all the customers
             Console.Write("\n Please enter the customer ID that you wish to select: ");
             int id = int.Parse(Console.ReadLine());
-            if (customerDic.ContainsKey(id))
+            if (customerDic.ContainsKey(id)) //Validate if there input(customerid) exist in dictionary
             {
-                Customer customer = customerDic[id];
-                Order orders = customer.CurrentOrder;
-                if (orders != null)
+                Customer customer = customerDic[id];  //Retrieve the appropriate customer(keu) using the id (value) provided
+                Order oldorder = customer.CurrentOrder; // Assign a variable with Order type to hold the current current order
+                if (oldorder != null)//Check even if the customer has any current orders
                 {
                     int iceCreamNumber = 1;
-                    foreach (IceCream iceCream in customer.CurrentOrder.IceCreamList)
+                    Console.WriteLine($" ----------- Order #{oldorder.Id} -----------");
+                    foreach (IceCream iceCream in customer.CurrentOrder.IceCreamList) // For leoop icecream list, to display the diff icecream
                     {
-                        Console.WriteLine($"\n-----#{iceCreamNumber} IceCream-------");
+                        Console.WriteLine($" -----#{iceCreamNumber} IceCream-------");
                         Console.WriteLine(iceCream.ToString());
                         iceCreamNumber++;
-                        Console.WriteLine("-----------------------\n");
-                        DisplayMenuOpt6();
+                        Console.WriteLine(" -----------------------");
+                    }
+                    Console.WriteLine($" ---------------------------------");
+                    DisplayMenuOpt6(); // Display the menu options
+                    while (true)
+                    {
                         Console.Write(" Enter the option: ");
                         int opt = int.Parse(Console.ReadLine());
-                        if (opt == 0)
+                        Console.WriteLine(" ----------------------------------------------------");
+                        if (opt == 4) 
                         {
                             break;
                         }
                         else if (opt == 1)
                         {
-
+                            ModifyIceCreamDetails(oldorder, availableflavoursdic, availbletoppingsdic);
                         }
                         else if (opt == 2)
                         {
-                            Order newOrder = customer.MakeOrder();
-                            customer.CurrentOrder = newOrder;
+                            Order newOrder = customer.MakeOrder(); // Initialise an empty order
+                            oldorder == newOrder; // Assign the empty oder to current order of the customer
+                            ProcessIceCreamOrder(newOrder, availableflavoursdic, availbletoppingsdic); // Call in the function,
                             if (customer.Rewards.Tier == "Gold")
                             {
                                 goldQueue.Enqueue(customer);
@@ -891,27 +920,144 @@ namespace draft_assignment
                                 regularQueue.Enqueue(customer);
                             }
                         }
+
                     }
                 }
+
                 else
                 {
-                    Console.WriteLine($" {customer.Name} has no current orders.");
+                    Console.WriteLine($" {customer.Name} has no current orders."); // Display message, if there isn't current order to modify
                 }
             }
             else
             {
-                Console.WriteLine(" Invalid customer ID. Please enter a valid ID.");
+                Console.WriteLine(" Invalid customer ID. Please enter a valid ID."); // Error massage when specified id not food
             }
         }
+        // Display Menu for opt 6
         public static void DisplayMenuOpt6()
         {
+            Console.WriteLine("\n ---------------- Modify Order Details --------------");
             Console.WriteLine(" [1] Modify an IceCream");
             Console.WriteLine(" [2] Add new an IceCream");
             Console.WriteLine(" [3] Delete an IceCream");
             Console.WriteLine(" [4] Exit");
+            Console.WriteLine(" ----------------------------------------------------");
         }
+        private static void ModifyIceCreamDetails(Order order, Dictionary<string, int> availableflavoursdic, Dictionary<string, double> availbletoppingsdic)
+        {
+            while (true)
+            {
+                try
+                {
+                    Console.Write(" \nEnter the ice cream number you want to modify: ");
+                    int iceCreamNumber = int.Parse(Console.ReadLine());
 
+                    if (iceCreamNumber >= 1 && iceCreamNumber <= order.IceCreamList.Count) //Checking if the icenumber (input) is valid and not out of range
+                    {
+                        IceCream iceCreamToModify = order.IceCreamList[iceCreamNumber - 1]; // AAccessing the icecream, in the icecream list
+                        Console.WriteLine($" Modifying details for Ice Cream #{iceCreamNumber}");
 
+                        // Display options to modify ice cream
+                        Console.WriteLine("\n ---------------- Modify an IceCream ---------------");
+                        Console.WriteLine(" [1] Modify Scoops");
+                        Console.WriteLine(" [2] Modify Flavours");
+                        Console.WriteLine(" [3] Modify Toppings");
+                        Console.WriteLine(" [4] Modify Dipped Cone");
+                        Console.WriteLine(" [5] Modify Waffle Flavour");
+                        Console.WriteLine(" [0] Exit");
+                        Console.WriteLine(" ----------------------------------------------------");
+                        Console.Write(" Enter the option: ");
+                        int modifyOption = int.Parse(Console.ReadLine());
+                        Console.WriteLine(" ----------------------------------------------------");
+                        if (modifyOption == 0)
+                        {
+                            break;
+                        }
+                        else if (modifyOption == 1)
+                        {
+                            iceCreamToModify.Scoop = GetScoops();
+                        }
+                        else if (modifyOption == 2)
+                        {
+                            iceCreamToModify.Flavours = GetFlavours(availableflavoursdic, iceCreamToModify.Scoop);
+                        }
+                        else if (modifyOption == 3)
+                        {
+                            iceCreamToModify.Toppings = GetToppings(availbletoppingsdic);
+                        }
+                        else if (modifyOption == 4)
+                        {
+                            if(iceCreamToModify is Cone) // Type Casting, checking whether, icecream option is cone to access its subclass attribute (dipped0
+                            {
+                                Cone coneIceCream = (Cone) iceCreamToModify;
+                                Console.Write(" Would you like to have a chocolate dipped cone [Y/N]: ");
+                                string ans = Console.ReadLine().ToUpper();
+                                bool dipped = false; //Initialising dipped to false.
+                                if (ans == "Y")
+                                {
+                                    dipped = true; // According to user input, change dipped value
+                                }
+                                else if (ans == "N")
+                                {
+                                    dipped = false; // According to user input, change dipped value
+                                }
+                                else
+                                {
+                                    Console.WriteLine(" Enter a valid input.\n"); //Validating for wrong inputs.
+                                    continue;
+                                }
+                                coneIceCream.Dipped = dipped;
+                            }
+                            else
+                            {
+                                Console.WriteLine($" {iceCreamToModify.Option} does not have the dipped property to be changed.");
+                            }
+                        }
+                        else if (modifyOption == 5)
+                        {
+                            if (iceCreamToModify is Waffle) // Type Casting, checking whether, icecream option is cone to access its subclass attribute (dipped0
+                            {
+                                Cone coneIceCream = (Cone)iceCreamToModify;
+                                Console.Write(" Would you like to have a chocolate dipped cone [Y/N]: ");
+                                string ans = Console.ReadLine().ToUpper();
+                                bool dipped = false; //Initialising dipped to false.
+                                if (ans == "Y")
+                                {
+                                    dipped = true; // According to user input, change dipped value
+                                }
+                                else if (ans == "N")
+                                {
+                                    dipped = false; // According to user input, change dipped value
+                                }
+                                else
+                                {
+                                    Console.WriteLine(" Enter a valid input.\n"); //Validating for wrong inputs.
+                                    continue;
+                                }
+                                coneIceCream.Dipped = dipped;
+                            }
+                            else
+                            {
+                                Console.WriteLine($" {iceCreamToModify.Option} does not have the dipped property to be changed.");
+                            }
+                        }
+                    }
+                    else
+                    {
+
+                    }
+                }
+                catch (FormatException) // Handle format exception
+                {
+                    Console.WriteLine(" Invalid input! Please try again.\n");
+                }
+                catch (Exception ex)  // General exception handling
+                {
+                    Console.WriteLine($" Error occurred: {ex.Message}\n");
+                }
+            }
+        }
     }
 }
 
