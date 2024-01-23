@@ -36,14 +36,14 @@ namespace draft_assignment
             string flavourDetails = "";
             foreach (Flavour flavour in Flavours)
             {
-                flavourDetails += $"{flavour.Type},";
+                flavourDetails += $"{flavour.Type.ToLower()},";
             }
             string toppingDetails = "";
             foreach (Topping topping in Toppings)
             {
-                toppingDetails += $"{topping.Type},";
+                toppingDetails += $"{topping.Type.ToLower()},";
             }
-            return $" Ice Cream Details:\n  - Option: {Option,-10}\n  - Scoop: {Scoop,-10}\n  - Flavours: {flavourDetails}\n  - Toppings: {toppingDetails}";
+            return $" Ice Cream Details:\n  - Option: {Option.ToLower(),-10}\n  - Scoop: {Scoop,-10}\n  - Flavours: {flavourDetails}\n  - Toppings: {toppingDetails}";
 
         }
     }

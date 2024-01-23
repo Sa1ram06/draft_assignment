@@ -17,6 +17,8 @@ namespace draft_assignment
         // Declaring default constructor
         public PointCard()
         {
+            Points = 0;
+            PunchCard = 0;
             Tier = "Ordinary";
         }
         // Declaring parameterized constructor
