@@ -1001,7 +1001,7 @@ namespace draft_assignment
                                         Order newOrder = customer.MakeOrder();
                                         IceCream icecream = CreateIceCream(availableflavoursdic, availbletoppingsdic); // Call in the function, to add icecreams in neworder
                                         newOrder.AddIceCream(icecream);
-                                        customer.UpdateCurrentOrder(newOrder);
+                                        
 
                                     }
                                     else if (opt == 3)
