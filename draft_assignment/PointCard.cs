@@ -45,15 +45,17 @@ namespace draft_assignment
         }
         public void RedeemPoints(int pointsToRedeem)
         {
-            if ((pointsToRedeem <= Points) && (Tier == "Silver" || Tier == "Gold"))
-            {
                 Points -= pointsToRedeem;
-                double redeemValue = pointsToRedeem * 0.02;
-            }
+
         }
 
         public void Punch()
         {
+            PunchCard++;
+            if (PunchCard >= 10)
+            {
+                PunchCard = 0;
+            }
 
         }
         public override string ToString()

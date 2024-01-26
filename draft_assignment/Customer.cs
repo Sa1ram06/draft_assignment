@@ -12,7 +12,7 @@ using System.Linq;
 
 namespace draft_assignment
 {
-    public class Customer
+    public class Customer   
     {
         // Declaring attributes
         private string _name;
@@ -46,26 +46,17 @@ namespace draft_assignment
         public Order MakeOrder()
         {
             Order newOrder = new Order();
-            OrderHistory.Add(newOrder);
             return newOrder;
         }
         public bool IsBirthday()
         {
-            DateTime datenow = DateTime.Now;
-            if (datenow == Dob)
+            DateTime currentdate = DateTime.Now;
+            if (currentdate.Day == Dob.Day && currentdate.Month == Dob.Month)
             {
-                // Do some logic
                 return true;
             }
             return false;
         }
-        // Extra method to update the old order to new order (Option 6)
-        public void UpdateCurrentOrder(Order updatedOrder)
-        {
-            CurrentOrder = updatedOrder;
-        }
-
-
         public override string ToString()
         {
             return $" {Name,-10} {Memberid,-10} {Dob.ToString("dd/MM/yyyy"),-15}";

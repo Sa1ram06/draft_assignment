@@ -85,7 +85,7 @@ namespace draft_assignment
                         }
                         else if (opt == 7)
                         {
-                            // Call method for option 7
+                            ProcessOrder(regularqueue, Goldqueue);
                         }
                         else if (opt == 8)
                         {
@@ -894,34 +894,38 @@ namespace draft_assignment
                     if (customerDic.ContainsKey(id)) //Validate if there input(customerid) exist in dictionary
                     {
                         Customer customer = customerDic[id]; //Retrieve the appropriate customer(keu) using the id (value) provided
+                        if (customer.CurrentOrder != null)
+                        {
+                            Console.WriteLine($" \n Current Order details for {customer.Name}");
+                            Console.WriteLine(" ------------------------------------------");
+                            DisplayCustomerOrderDetails(customer);
+                            Console.WriteLine(" Order not fulfilled.\n");
+                            Console.WriteLine(" ------------------------------------------");
+                        }
+
                         if (customer.OrderHistory.Count() > 0) // Check if customer even got ORder history to display
                         {
-                            Console.WriteLine($" Order details for {customer.Name} (Customer ID: {customer.Memberid})");
-                            
+                            Console.WriteLine($" Order History for {customer.Name} ");
+                            Console.WriteLine(" -----------------------");
+
                             foreach (Order order in customer.OrderHistory) // Loopp through the order history
                             {
-                                Console.WriteLine($" \nOrder ID: {order.Id}");
+                                Console.WriteLine($"\n Order ID: {order.Id}");
                                 foreach (IceCream iceCream in order.IceCreamList)
                                 {
                                     Console.WriteLine(iceCream.ToString());
                                 }
                                 Console.WriteLine($" Time Received: {order.TimeReceived}");
+                                Console.WriteLine($" Time Fulfilled: {order.TimeFulfilled}");
 
-                                if (order.TimeFulfilled != null)//CUrrent orders which are added to order history, timefulfilled will be null.
-                                {
-                                    Console.WriteLine($" Time Fulfilled: {order.TimeFulfilled}");
-                                }
-                                else
-                                {
-                                    Console.WriteLine(" Order not fulfilled yet.");
-                                }
                             }
-                            
+
                         }
-                        else
+                        if (customer.CurrentOrder == null && customer.OrderHistory.Count() == 0)
                         {
-                            Console.WriteLine($" {customer.Name} has no Order History "); // Message to display there is no orders for the selected customer
+                            Console.WriteLine($" {customer.Name} has no Order History nor Current Order");
                         }
+
                         break;
 
                     }
@@ -1252,6 +1256,102 @@ namespace draft_assignment
                 }
             }
         }
+        // Option 7
+        public static void ProcessOrder(Queue<Customer> regularQueue, Queue<Customer> goldQueue)
+        {
+            if (goldQueue.Count > 0)
+            {
+                Console.WriteLine("\n ---------Gold Dequeue-------------");
+                ProcessCustomerOrder(goldQueue.Dequeue());
+            }
+            if (regularQueue.Count > 0)
+            {
+                Console.WriteLine("\n ---------Regular Dequeue-------------");
+                ProcessCustomerOrder(regularQueue.Dequeue());
+            }
+            else
+            {
+                Console.WriteLine(" No orders to process.");
+            }
+        }
+        private static void ProcessCustomerOrder(Customer customer)
+        {
+            DisplayCustomerOrderDetails(customer);
+            Order order = customer.CurrentOrder;
+            PointCard pointCard = customer.Rewards;
+            double totalBill = order.CalculateTotal();
+            Console.WriteLine($" Total Bill: ${totalBill:F2}");
+            Console.WriteLine($" ---------------------------------");
+            Console.WriteLine($" Membership status: {pointCard.Tier}, Points: {pointCard.Points}");
+            while (true)
+            {
+                try
+                {
+                    if (customer.IsBirthday())
+                    {
+                        IceCream mostExpensiveIceCream = order.IceCreamList.Max();
+                        totalBill -= mostExpensiveIceCream.CalculatePrice();
+                    }
+                    if (pointCard.PunchCard == 10)
+                    {
+                        totalBill -= order.IceCreamList[0].CalculatePrice();
+                        customer.Rewards.Punch();
+                    }
+
+                    if (pointCard.Tier == "Ordinary")
+                    {
+                        Console.WriteLine($" ---------------------------------");
+                        Console.WriteLine($" Final Bill Amount: ${totalBill:F2}");
+                        Console.WriteLine($" ---------------------------------");
+                    }
+                    if (pointCard.Tier == "Silver" || pointCard.Tier == "Gold")
+                    {
+                        while(true)
+                        {
+                            Console.Write($" Having {pointCard.Points} points, how much would you like to use it on offsetting your final bill: ");
+                            int redeempoints = int.Parse(Console.ReadLine().Trim());
+                            if (redeempoints > pointCard.Points)
+                            {
+                                Console.WriteLine($" You are only able to redeem up to {pointCard.Points} points");
+                                continue;
+                            }
+                            else
+                            {
+                                pointCard.RedeemPoints(redeempoints);
+                                double redeemValue = redeempoints * 0.02;
+                                totalBill -= redeemValue;
+                                Console.WriteLine($" ---------------------------------");
+                                Console.WriteLine($" Final Bill Amount: ${totalBill:F2}");
+                                Console.WriteLine($" ---------------------------------");
+                                break;
+
+                            }
+                        }
+                    }
+                    Console.Write(" Press any key to make payment: ");
+                    Console.ReadLine();
+                    foreach (IceCream iceCream in order.IceCreamList)
+                    {
+                        customer.Rewards.Punch();
+                    }
+                    pointCard.AddPoint(totalBill);
+                    order.TimeFulfilled = DateTime.Now;
+                    customer.OrderHistory.Add(order);
+                    order = null;
+                    break;
+                }
+                catch (FormatException) // Handle format exception
+                {
+                    Console.WriteLine(" Invalid input! Please try again.");
+                }
+                catch (Exception ex)  // General exception handling
+                {
+                    Console.WriteLine($" Error occurred: {ex.Message}\n");
+                }
+            }
+        }
+
+
 
 
         // Extra methods to display IceCream details 

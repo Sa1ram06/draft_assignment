@@ -1,8 +1,9 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 
 namespace draft_assignment
 {
-    public abstract class IceCream
+    public abstract class IceCream: IComparable<IceCream>
     {
         // Declaring attributes
         private string _option;
@@ -30,7 +31,11 @@ namespace draft_assignment
         // Abstract method 
         public abstract double CalculatePrice();
 
-
+        public int CompareTo(IceCream other)
+        {
+            // Compare based on price (you might need to adjust this based on your actual implementation)
+            return CalculatePrice().CompareTo(other.CalculatePrice());
+        }
         public override string ToString()
         {
             string flavourDetails = "";
