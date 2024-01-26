@@ -972,42 +972,60 @@ namespace draft_assignment
                                 {
                                     break;
                                 }
-                                IceCream iceCreamToModify;
-                                while (true)
-                                {
-                                    Console.Write(" Enter the ice cream number you want to modify: ");
-                                    int iceCreamNumber = int.Parse(Console.ReadLine());
-
-                                    if (iceCreamNumber >= 1 && iceCreamNumber <= oldorder.IceCreamList.Count)
-                                    {
-                                        iceCreamToModify = oldorder.IceCreamList[iceCreamNumber - 1];
-                                        Console.WriteLine($" Modifying details for Ice Cream #{iceCreamNumber}");
-                                        break;
-                                    }
-                                    else
-                                    {
-                                        Console.WriteLine($" Enter a valid icecream number");
-                                        continue;
-                                    }
-                                }
                                 if (opt >= 1 && opt <= 3)
                                 {
                                     if (opt == 1)
                                     {
+                                        IceCream iceCreamToModify;
+                                        while (true)
+                                        {
+                                            Console.Write(" Enter the ice cream number you want to modify: ");
+                                            int iceCreamNumber = int.Parse(Console.ReadLine());
+
+                                            if (iceCreamNumber >= 1 && iceCreamNumber <= oldorder.IceCreamList.Count)
+                                            {
+                                                iceCreamToModify = oldorder.IceCreamList[iceCreamNumber - 1];
+                                                Console.WriteLine($" Modifying details for Ice Cream #{iceCreamNumber}");
+                                                break;
+                                            }
+                                            else
+                                            {
+                                                Console.WriteLine($" Enter a valid icecream number");
+                                                continue;
+                                            }
+                                        }
                                         ModifyIceCreamDetails(oldorder, availableflavoursdic, availbletoppingsdic, customer, iceCreamToModify);
                                     }
                                     else if (opt == 2)
                                     {
-                                        Order newOrder = customer.MakeOrder();
                                         IceCream icecream = CreateIceCream(availableflavoursdic, availbletoppingsdic); // Call in the function, to add icecreams in neworder
-                                        newOrder.AddIceCream(icecream);
+                                        oldorder.AddIceCream(icecream);
                                         
 
                                     }
                                     else if (opt == 3)
                                     {
+                                        
+                                        while (true)
+                                        {
+                                            Console.Write(" Enter the ice cream number you want to modify: ");
+                                            int iceCreamNumber = int.Parse(Console.ReadLine());
 
+                                            if (iceCreamNumber >= 1 && iceCreamNumber <= oldorder.IceCreamList.Count)
+                                            {
+                                                int delete_index = iceCreamNumber - 1;
+                                                Console.WriteLine($" Deleting Ice Cream #{iceCreamNumber}");
+                                                oldorder.DeleteIceCream(delete_index);
+                                                break;
+                                            }
+                                            else
+                                            {
+                                                Console.WriteLine($" Enter a valid icecream number");
+                                                continue;
+                                            }
+                                        }
                                     }
+                                    DisplayCustomerOrderDetails(customer);
                                 }
                             }
                         }
@@ -1130,8 +1148,7 @@ namespace draft_assignment
                                 int index = order.IceCreamList.IndexOf(iceCreamToModify);
                                 order.IceCreamList[index] = newIceCream;
 
-                                // Update iceCreamToModify reference to the new ice cream
-                                iceCreamToModify = newIceCream;
+                               
                             }
                             else
                             {
@@ -1218,7 +1235,7 @@ namespace draft_assignment
                             }
                         }
 
-                        order.ModifyIceCream(index); // Add this line
+                      
                     }
                     else
                     {
