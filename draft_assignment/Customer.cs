@@ -59,6 +59,11 @@ namespace draft_assignment
             }
             return false;
         }
+        // Extra method to update the old order to new order (Option 6)
+        public void UpdateCurrentOrder(Order updatedOrder)
+        {
+            CurrentOrder = updatedOrder;
+        }
 
 
         public override string ToString()

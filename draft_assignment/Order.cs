@@ -34,8 +34,17 @@ namespace draft_assignment
         // Methods
         public void ModifyIceCream(int index)
         {
-            // Not sure
+            if (index >= 0 && index < IceCreamList.Count)
+            {
+                // Your logic to modify the ice cream at the specified index goes here
+                Console.WriteLine($"Modifying ice cream at index {index}");
+            }
+            else
+            {
+                Console.WriteLine("Invalid index for modifying ice cream.");
+            }
         }
+        
 
         public void AddIceCream(IceCream iceCream)
         {
