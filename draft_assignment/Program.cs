@@ -879,19 +879,19 @@ namespace draft_assignment
                                             continue;
                                         }
                                     }
-                                  
+                                   
                                 }
                                 else
                                 {
                                     Console.WriteLine($" Unknown ice cream option: {newOption}");
                                     continue;
                                 }
-
                                 // Replace the existing ice cream with the new one in the IceCreamList
                                 int index = order.IceCreamList.IndexOf(iceCreamToModify);
                                 order.IceCreamList[index] = newIceCream;
+                                iceCreamToModify = newIceCream;
 
-                               
+
                             }
                             else
                             {
@@ -1209,11 +1209,33 @@ namespace draft_assignment
                                 }
 
                             }
-
-                            Order order = new Order(orderId, timerecieved)  // Creating new Order with appropriate parameters
+                            Order order = null;
+                            Customer customer  = null;
+                            if (customerDic.ContainsKey(memberId)) // Check for appropriate customer to add the order
                             {
-                                TimeFulfilled = timefullfiled
-                            };
+                                customer = customerDic[memberId];
+                                foreach(Order item in customer.OrderHistory)
+                                {
+                                    if(item.Id == orderId)
+                                    {
+                                        order = item;
+                                    }
+                                }
+                                
+
+                            }
+                            if (order == null)
+                            {
+                                order = new Order(orderId, timerecieved)  // Creating new Order with appropriate parameters
+                                {
+                                    TimeFulfilled = timefullfiled
+                                };
+                                 if (customer != null)
+                                {
+                                    customer.OrderHistory.Add(order); // Add the order to the specfic customer
+                                }
+                            }
+                           
 
                             if (option == "Cup") // Creating Cup IceCream with valid information.
                             {
@@ -1233,12 +1255,9 @@ namespace draft_assignment
                                 order.AddIceCream(icecream); // Appending the created ice cream to the order
                             }
 
-                            if (customerDic.ContainsKey(memberId)) // Check for appropriate customer to add the order
-                            {
-                                Customer customer = customerDic[memberId];
-                                customer.OrderHistory.Add(order); // Add the order to the specfic customer
+                            
 
-                            }
+                            
 
                         }
                     }
