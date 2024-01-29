@@ -126,170 +126,6 @@ namespace draft_assignment
             Console.WriteLine(" [0] Exit");
             Console.WriteLine(" -----------------------------------------");
         }
-
-
-        // Read and store data from customer.csv file. (Dictionary)
-        public static void ReadCustomerCSV(Dictionary<int, Customer> customerDic)
-        {
-            using (StreamReader sr = new StreamReader("draft_customers.csv"))
-            {
-
-                try
-                {
-                    string s = sr.ReadLine(); // skipping the header of the csv file
-                    string line;
-                    while ((line = sr.ReadLine()) != null)
-                    {
-                        string[] parts = line.Split(','); // splitting by comma
-                        if (parts.Length == 6)
-                        {
-
-                            string name = parts[0];
-                            int id = Convert.ToInt32(parts[1]);
-                            DateTime dob = DateTime.Parse(parts[2]);
-                            string tier = parts[3];
-                            int points = int.Parse(parts[4]);
-                            int punchCard = int.Parse(parts[5]);
-                            Customer customer = new Customer(name, id, dob);
-                            customer.Rewards = new PointCard(points, punchCard);
-                            customer.Rewards.Tier = tier;
-                            customerDic.Add(id, customer);
-                        }
-                    }
-                }
-                catch (FileNotFoundException ex) // Handle a exception if file not found
-                {
-                    Console.WriteLine($" File not found: {ex.Message}");
-                }
-                catch (FormatException) // Handle format exception
-                {
-                    Console.WriteLine("Error parsing data. Check the format in the CSV file.");
-                }
-                catch (Exception ex) // General exception handling
-                {
-                    Console.WriteLine($"Error reading file: {ex.Message}");
-                }
-            }
-        }
-
-        // Read and store data from order.csv file. (Dictionary)
-        public static void ReadOrderCSV(Dictionary<int, Customer> customerDic, Dictionary<string, int> availableflavoursdic)
-        {
-            try
-            {
-                using (StreamReader sr = new StreamReader("draft_orders.csv"))
-                {
-                    string s = sr.ReadLine(); // skipping the header line
-                    string line;
-                    while ((line = sr.ReadLine()) != null)
-                    {
-                        string[] parts = line.Split(',');
-                        if (parts.Length == 15)
-                        {
-                            List<Flavour> orderedFlavourlist = new List<Flavour>(); // initialising empty list for ordered flavours
-                            List<Topping> orderedtoppinglist = new List<Topping>(); // initialising empty list for ordered toppings
-                            int orderId = int.Parse(parts[0]);
-                            int memberId = int.Parse(parts[1]);
-                            DateTime timerecieved = DateTime.Parse(parts[2]);
-                            DateTime timefullfiled = DateTime.Parse(parts[3]);
-                            string option = parts[4];
-                            int scoops = int.Parse(parts[5]);
-                            bool dipped;
-                            string waffleFlavour = null;
-                            List<string> flavours = new List<string> { parts[8], parts[9], parts[10] }; // initialising all the three flavours into a list despite being 
-                            List<string> toppings = new List<string> { parts[11], parts[12], parts[13], parts[14] }; // initialising all the three flavours into a list despite being
-                            List<string> regularflavours = new List<string>(); //initialising a list to hold strings of regular flavours
-                            List<string> premiumflavours = new List<string>(); //initialising a list to hold strings of premium flavours
-                            foreach (var kvp in availableflavoursdic) // For loop the dictionary, to identify which flavours are premium. 
-                            {
-                                string flavourName = kvp.Key;
-                                int flavourCost = kvp.Value;
-
-                                if (flavourCost == 2)
-                                {
-                                    premiumflavours.Add(flavourName); //Assuming premium flavours have $2.00, then add to premium list
-                                }
-                                else
-                                {
-                                    regularflavours.Add(flavourName); // Add to regular list if, its not premium
-                                }
-                            }
-                            bool ispremium = false; // Initialise premium to false
-
-                            foreach (string flavour in flavours)
-                            {
-                                if (!string.IsNullOrEmpty(flavour)) // Check if the value is valid (not nill/empty),
-                                {
-                                    if (premiumflavours.Contains(flavour.ToUpper()))
-                                    {
-                                        ispremium = true; //  if the flavour is found in the premium list, premium set to true
-                                    }
-                                    else
-                                    {
-                                        ispremium = false; //  if the flavour is not found in the premium list, premium set to false
-                                    }
-                                    orderedFlavourlist.Add(new Flavour(flavour, ispremium, 1)); // Create a new flavour
-                                }
-                            }
-
-                            foreach (string topping in toppings)
-                            {
-                                if (!string.IsNullOrEmpty(topping))  // Check if the valid is (not nill/empty) 
-                                {
-                                    orderedtoppinglist.Add(new Topping(topping));  // Create a new topping
-                                }
-
-                            }
-
-                            Order order = new Order(orderId, timerecieved)  // Creating new Order with appropriate parameters
-                            {
-                                TimeFulfilled = timefullfiled
-                            };
-
-                            if (option == "Cup") // Creating Cup IceCream with valid information.
-                            {
-                                IceCream icecream = new Cup(option, scoops, orderedFlavourlist, orderedtoppinglist);
-                                order.AddIceCream(icecream); // Appending the created ice cream to the order
-                            }
-                            else if (option == "Cone") // Creating Cone IceCream with valid information.
-                            {
-                                dipped = bool.Parse(parts[6]);
-                                IceCream icecream = new Cone(option, scoops, orderedFlavourlist, orderedtoppinglist, dipped);
-                                order.AddIceCream(icecream); // Appending the created ice cream to the order
-                            }
-                            else if (option == "Waffle") // Creating Waffle IceCream with valid information.
-                            {
-                                waffleFlavour = parts[7];
-                                IceCream icecream = new Waffle(option, scoops, orderedFlavourlist, orderedtoppinglist, waffleFlavour);
-                                order.AddIceCream(icecream); // Appending the created ice cream to the order
-                            }
-
-                            if (customerDic.ContainsKey(memberId)) // Check for appropriate customer to add the order
-                            {
-                                Customer customer = customerDic[memberId];
-                                customer.OrderHistory.Add(order); // Add the order to the specfic customer
-
-                            }
-
-                        }
-                    }
-                }
-            }
-            catch (FileNotFoundException) // Handle a exception if file not found
-            {
-                Console.WriteLine("File not found.");
-            }
-            catch (FormatException) // Handle format exception
-            {
-                Console.WriteLine("Error parsing data. Check the format in the CSV file.");
-            }
-            catch (Exception)// General exception handling
-            {
-                Console.WriteLine("Error reading file.");
-            }
-        }
-
-
         // Option 1 of listing the customers
         public static void ListAllCustomers(Dictionary<int, Customer> customerDic)
         {
@@ -548,7 +384,7 @@ namespace draft_assignment
             {
                 Console.WriteLine("\n ---------Option-------------");
                 Console.Write(" Enter the Ice cream option (Cup/Cone/Waffle): ");
-                option = Console.ReadLine()?.ToUpper().Trim(); // Convert to Upper, user able to type in both CAPs and no Caps
+                option = Console.ReadLine().ToUpper().Trim(); // Convert to Upper, user able to type in both CAPs and no Caps
 
                 if (option == "CUP" || option == "CONE" || option == "WAFFLE") // Validating for an appropriate option
                 {
@@ -609,7 +445,7 @@ namespace draft_assignment
 
                 if (flavourCost == 2)
                 {
-                    premiumflavours.Add(flavourName.ToUpper()); //Assuming premium flavours have $2.00, then add to premium list
+                    premiumflavours.Add(flavourName.ToUpper()); //Assuming premium flavours are $2.00, then add to premium list
                 }
                 else
                 {
@@ -729,108 +565,7 @@ namespace draft_assignment
                 }
             }
         }
-        // Sub Methods for Method: 07
-        public static void ReadFlavourrCSV(Dictionary<string, int> AvailableFlavourDic)
-        {
-            using (StreamReader sr = new StreamReader("draft_flavours.csv"))
-            {
-
-                try
-                {
-                    string s = sr.ReadLine(); //Skipping header line
-                    string line;
-                    while ((line = sr.ReadLine()) != null)
-                    {
-                        string[] parts = line.Split(','); //Splitting by comma
-                        if (parts.Length == 2)
-                        {
-
-                            string name = parts[0];
-                            int cost = int.Parse(parts[1]);
-                            AvailableFlavourDic.Add(name, cost); //Adding the name (key) cost(value) key value pair
-                        }
-                    }
-                }
-                catch (FileNotFoundException) // Handle a exception if file not found
-                {
-                    Console.WriteLine("File not found.");
-                }
-                catch (FormatException) // Handle format exception
-                {
-                    Console.WriteLine("Error parsing data. Check the format in the CSV file.");
-                }
-                catch (Exception)// General exception handling
-                {
-                    Console.WriteLine("Error reading file.");
-                }
-            }
-
-        }
-
-
-        // Sub Methods for Method: 08
-
-        public static void ReadToppingsCSV(Dictionary<string, double> AvailableToppingsDic)
-        {
-            using (StreamReader sr = new StreamReader("draft_toppings.csv"))
-            {
-
-                try
-                {
-                    string s = sr.ReadLine(); //Skipping the header line
-                    string line;
-                    while ((line = sr.ReadLine()) != null)
-                    {
-                        string[] parts = line.Split(','); //Split by comma
-                        if (parts.Length == 2)
-                        {
-
-                            string name = parts[0];
-                            double cost = double.Parse(parts[1]);
-                            AvailableToppingsDic.Add(name, cost); //Adding the name (key) cost(value) key value pair
-                        }
-                    }
-                }
-                catch (FileNotFoundException) // Handle a exception if file not found
-                {
-                    Console.WriteLine("File not found.");
-                }
-                catch (FormatException) // Handle format exception
-                {
-                    Console.WriteLine("Error parsing data. Check the format in the CSV file.");
-                }
-                catch (Exception)// General exception handling
-                {
-                    Console.WriteLine("Error reading file.");
-                }
-
-            }
-        }
-        // Sub Methods for Method: 09
-        public static void DisplayFlavours(Dictionary<string, int> AvailableflavourDic)
-        {
-            Console.WriteLine(" \n-----------Flavours Available-------------"); //Display flavours
-            Console.WriteLine($" {"Name",-10} {"Cost",-10}");
-            foreach (KeyValuePair<string, int> Kvp in AvailableflavourDic)
-            {
-                Console.WriteLine($" {Kvp.Key,-10} ${Kvp.Value,-2:F2}");
-            }
-            Console.WriteLine(" -----------------------------------------");
-
-        }
-
-        // Sub Methods for Method: 10
-        public static void DisplayToppings(Dictionary<string, double> AvailableToppingsDic)
-        {
-            Console.WriteLine(" \n-----------Toppings Available-------------"); //Display Toppings
-            Console.WriteLine($" {"Name",-10} {"Cost",-10}");
-            foreach (KeyValuePair<string, double> Kvp in AvailableToppingsDic)
-            {
-                Console.WriteLine($" {Kvp.Key,-10} ${Kvp.Value,-2:F2}");
-            }
-            Console.WriteLine(" ------------------------------------------");
-
-        }
+ 
         // Sub Methods for Method: 11
         private static void ProcessIceCreamOrder(Order newOrder, Dictionary<string, int> availableflavoursdic, Dictionary<string, double> availbletoppingsdic,Customer customer)
         {
@@ -1030,6 +765,10 @@ namespace draft_assignment
                                         }
                                     }
                                     DisplayCustomerOrderDetails(customer);
+                                }
+                                else
+                                {
+                                    Console.WriteLine(" Invalid option! Enter an option from the display shown,");
                                 }
                             }
                         }
@@ -1289,13 +1028,15 @@ namespace draft_assignment
                 {
                     if (customer.IsBirthday())
                     {
-                        IceCream mostExpensiveIceCream = order.IceCreamList.Max();
+                        IceCream mostExpensiveIceCream = order.IceCreamList.Max()];
                         totalBill -= mostExpensiveIceCream.CalculatePrice();
                     }
                     if (pointCard.PunchCard == 10)
                     {
                         totalBill -= order.IceCreamList[0].CalculatePrice();
-                        customer.Rewards.Punch();
+                        pointCard.Punch();
+                        pointCard.PunchCard = 0;
+                        
                     }
 
                     if (pointCard.Tier == "Ordinary")
@@ -1330,9 +1071,13 @@ namespace draft_assignment
                     }
                     Console.Write(" Press any key to make payment: ");
                     Console.ReadLine();
-                    foreach (IceCream iceCream in order.IceCreamList)
+                    for(int i = 0; i < order.IceCreamList.Count; i++)
                     {
                         customer.Rewards.Punch();
+                        if(i == 9)
+                        {
+                            pointCard.PunchCard = 10;
+                        }
                     }
                     pointCard.AddPoint(totalBill);
                     order.TimeFulfilled = DateTime.Now;
@@ -1351,10 +1096,271 @@ namespace draft_assignment
             }
         }
 
+        // Reading all necessary csv files
+        // Read and store data from customer.csv file. (Dictionary)
+        public static void ReadCustomerCSV(Dictionary<int, Customer> customerDic)
+        {
+            using (StreamReader sr = new StreamReader("draft_customers.csv"))
+            {
 
+                try
+                {
+                    string s = sr.ReadLine(); // skipping the header of the csv file
+                    string line;
+                    while ((line = sr.ReadLine()) != null)
+                    {
+                        string[] parts = line.Split(','); // splitting by comma
+                        if (parts.Length == 6)
+                        {
 
+                            string name = parts[0];
+                            int id = Convert.ToInt32(parts[1]);
+                            DateTime dob = DateTime.Parse(parts[2]);
+                            string tier = parts[3];
+                            int points = int.Parse(parts[4]);
+                            int punchCard = int.Parse(parts[5]);
+                            Customer customer = new Customer(name, id, dob);
+                            customer.Rewards = new PointCard(points, punchCard);
+                            customer.Rewards.Tier = tier;
+                            customerDic.Add(id, customer);
+                        }
+                    }
+                }
+                catch (FileNotFoundException ex) // Handle a exception if file not found
+                {
+                    Console.WriteLine($" File not found: {ex.Message}");
+                }
+                catch (FormatException) // Handle format exception
+                {
+                    Console.WriteLine("Error parsing data. Check the format in the CSV file.");
+                }
+                catch (Exception ex) // General exception handling
+                {
+                    Console.WriteLine($"Error reading file: {ex.Message}");
+                }
+            }
+        }
 
-        // Extra methods to display IceCream details 
+        // Read and store data from order.csv file. (Dictionary)
+        public static void ReadOrderCSV(Dictionary<int, Customer> customerDic, Dictionary<string, int> availableflavoursdic)
+        {
+            try
+            {
+                using (StreamReader sr = new StreamReader("draft_orders.csv"))
+                {
+                    string s = sr.ReadLine(); // skipping the header line
+                    string line;
+                    while ((line = sr.ReadLine()) != null)
+                    {
+                        string[] parts = line.Split(',');
+                        if (parts.Length == 15)
+                        {
+                            List<Flavour> orderedFlavourlist = new List<Flavour>(); // initialising empty list for ordered flavours
+                            List<Topping> orderedtoppinglist = new List<Topping>(); // initialising empty list for ordered toppings
+                            int orderId = int.Parse(parts[0]);
+                            int memberId = int.Parse(parts[1]);
+                            DateTime timerecieved = DateTime.Parse(parts[2]);
+                            DateTime timefullfiled = DateTime.Parse(parts[3]);
+                            string option = parts[4];
+                            int scoops = int.Parse(parts[5]);
+                            bool dipped;
+                            string waffleFlavour = null;
+                            List<string> flavours = new List<string> { parts[8], parts[9], parts[10] }; // initialising all the three flavours into a list despite being 
+                            List<string> toppings = new List<string> { parts[11], parts[12], parts[13], parts[14] }; // initialising all the three flavours into a list despite being
+                            List<string> regularflavours = new List<string>(); //initialising a list to hold strings of regular flavours
+                            List<string> premiumflavours = new List<string>(); //initialising a list to hold strings of premium flavours
+                            foreach (var kvp in availableflavoursdic) // For loop the dictionary, to identify which flavours are premium. 
+                            {
+                                string flavourName = kvp.Key;
+                                int flavourCost = kvp.Value;
+
+                                if (flavourCost == 2)
+                                {
+                                    premiumflavours.Add(flavourName); //Assuming premium flavours have $2.00, then add to premium list
+                                }
+                                else
+                                {
+                                    regularflavours.Add(flavourName); // Add to regular list if, its not premium
+                                }
+                            }
+                            bool ispremium = false; // Initialise premium to false
+
+                            foreach (string flavour in flavours)
+                            {
+                                if (!string.IsNullOrEmpty(flavour)) // Check if the value is valid (not nill/empty),
+                                {
+                                    if (premiumflavours.Contains(flavour.ToUpper()))
+                                    {
+                                        ispremium = true; //  if the flavour is found in the premium list, premium set to true
+                                    }
+                                    else
+                                    {
+                                        ispremium = false; //  if the flavour is not found in the premium list, premium set to false
+                                    }
+                                    orderedFlavourlist.Add(new Flavour(flavour, ispremium, 1)); // Create a new flavour
+                                }
+                            }
+
+                            foreach (string topping in toppings)
+                            {
+                                if (!string.IsNullOrEmpty(topping))  // Check if the valid is (not nill/empty) 
+                                {
+                                    orderedtoppinglist.Add(new Topping(topping));  // Create a new topping
+                                }
+
+                            }
+
+                            Order order = new Order(orderId, timerecieved)  // Creating new Order with appropriate parameters
+                            {
+                                TimeFulfilled = timefullfiled
+                            };
+
+                            if (option == "Cup") // Creating Cup IceCream with valid information.
+                            {
+                                IceCream icecream = new Cup(option, scoops, orderedFlavourlist, orderedtoppinglist);
+                                order.AddIceCream(icecream); // Appending the created ice cream to the order
+                            }
+                            else if (option == "Cone") // Creating Cone IceCream with valid information.
+                            {
+                                dipped = bool.Parse(parts[6]);
+                                IceCream icecream = new Cone(option, scoops, orderedFlavourlist, orderedtoppinglist, dipped);
+                                order.AddIceCream(icecream); // Appending the created ice cream to the order
+                            }
+                            else if (option == "Waffle") // Creating Waffle IceCream with valid information.
+                            {
+                                waffleFlavour = parts[7];
+                                IceCream icecream = new Waffle(option, scoops, orderedFlavourlist, orderedtoppinglist, waffleFlavour);
+                                order.AddIceCream(icecream); // Appending the created ice cream to the order
+                            }
+
+                            if (customerDic.ContainsKey(memberId)) // Check for appropriate customer to add the order
+                            {
+                                Customer customer = customerDic[memberId];
+                                customer.OrderHistory.Add(order); // Add the order to the specfic customer
+
+                            }
+
+                        }
+                    }
+                }
+            }
+            catch (FileNotFoundException) // Handle a exception if file not found
+            {
+                Console.WriteLine("File not found.");
+            }
+            catch (FormatException) // Handle format exception
+            {
+                Console.WriteLine("Error parsing data. Check the format in the CSV file.");
+            }
+            catch (Exception)// General exception handling
+            {
+                Console.WriteLine("Error reading file.");
+            }
+        }
+        //Reading flavour Csv File and storing the data in dictionary
+        public static void ReadFlavourrCSV(Dictionary<string, int> AvailableFlavourDic)
+        {
+            using (StreamReader sr = new StreamReader("draft_flavours.csv"))
+            {
+
+                try
+                {
+                    string s = sr.ReadLine(); //Skipping header line
+                    string line;
+                    while ((line = sr.ReadLine()) != null)
+                    {
+                        string[] parts = line.Split(','); //Splitting by comma
+                        if (parts.Length == 2)
+                        {
+
+                            string name = parts[0];
+                            int cost = int.Parse(parts[1]);
+                            AvailableFlavourDic.Add(name, cost); //Adding the name (key) cost(value) key value pair
+                        }
+                    }
+                }
+                catch (FileNotFoundException) // Handle a exception if file not found
+                {
+                    Console.WriteLine("File not found.");
+                }
+                catch (FormatException) // Handle format exception
+                {
+                    Console.WriteLine("Error parsing data. Check the format in the CSV file.");
+                }
+                catch (Exception)// General exception handling
+                {
+                    Console.WriteLine("Error reading file.");
+                }
+            }
+
+        }
+        //Reading Toppings Csv Files and storing the data in dictionary
+        public static void ReadToppingsCSV(Dictionary<string, double> AvailableToppingsDic)
+        {
+            using (StreamReader sr = new StreamReader("draft_toppings.csv"))
+            {
+
+                try
+                {
+                    string s = sr.ReadLine(); //Skipping the header line
+                    string line;
+                    while ((line = sr.ReadLine()) != null)
+                    {
+                        string[] parts = line.Split(','); //Split by comma
+                        if (parts.Length == 2)
+                        {
+
+                            string name = parts[0];
+                            double cost = double.Parse(parts[1]);
+                            AvailableToppingsDic.Add(name, cost); //Adding the name (key) cost(value) key value pair
+                        }
+                    }
+                }
+                catch (FileNotFoundException) // Handle a exception if file not found
+                {
+                    Console.WriteLine("File not found.");
+                }
+                catch (FormatException) // Handle format exception
+                {
+                    Console.WriteLine("Error parsing data. Check the format in the CSV file.");
+                }
+                catch (Exception)// General exception handling
+                {
+                    Console.WriteLine("Error reading file.");
+                }
+
+            }
+        }
+
+        // Common Program for Display
+        // Displaying Flavours List
+        public static void DisplayFlavours(Dictionary<string, int> AvailableflavourDic)
+        {
+            Console.WriteLine(" \n-----------Flavours Available-------------"); //Display flavours
+            Console.WriteLine($" {"Name",-10} {"Cost",-10}");
+            int i = 1;
+            foreach (KeyValuePair<string, int> Kvp in AvailableflavourDic)
+            {
+                Console.WriteLine($" {Kvp.Key,-10} ${Kvp.Value,-2:F2}");
+                i++;
+            }
+            Console.WriteLine(" -----------------------------------------");
+
+        }
+
+        // Displaying Toppings List
+        public static void DisplayToppings(Dictionary<string, double> AvailableToppingsDic)
+        {
+            Console.WriteLine(" \n-----------Toppings Available-------------"); //Display Toppings
+            Console.WriteLine($" {"Name",-10} {"Cost",-10}");
+            foreach (KeyValuePair<string, double> Kvp in AvailableToppingsDic)
+            {
+                Console.WriteLine($" {Kvp.Key,-10} ${Kvp.Value,-2:F2}");
+            }
+            Console.WriteLine(" ------------------------------------------");
+
+        }
+        //Display Order Details
         private static void DisplayCustomerOrderDetails(Customer customer)
         {
             int iceCreamNo = 1;

@@ -37,7 +37,7 @@ namespace draft_assignment
             {
                 Tier = "Gold";
             }
-            else if (Points >= 50 && Tier != "Silver")
+            else if (Points >= 50 && Points <= 100 && Tier != "Silver")
             {
                 Tier = "Silver";
             }
@@ -52,10 +52,6 @@ namespace draft_assignment
         public void Punch()
         {
             PunchCard++;
-            if (PunchCard >= 10)
-            {
-                PunchCard = 0;
-            }
 
         }
         public override string ToString()

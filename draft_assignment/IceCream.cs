@@ -33,7 +33,7 @@ namespace draft_assignment
 
         public int CompareTo(IceCream other)
         {
-            // Compare based on price (you might need to adjust this based on your actual implementation)
+            // Compare based on price)
             return CalculatePrice().CompareTo(other.CalculatePrice());
         }
         public override string ToString()
