@@ -1028,7 +1028,7 @@ namespace draft_assignment
                 {
                     if (customer.IsBirthday())
                     {
-                        IceCream mostExpensiveIceCream = order.IceCreamList.Max()];
+                        IceCream mostExpensiveIceCream = order.IceCreamList.Max();
                         totalBill -= mostExpensiveIceCream.CalculatePrice();
                     }
                     if (pointCard.PunchCard == 10)
@@ -1338,11 +1338,9 @@ namespace draft_assignment
         {
             Console.WriteLine(" \n-----------Flavours Available-------------"); //Display flavours
             Console.WriteLine($" {"Name",-10} {"Cost",-10}");
-            int i = 1;
             foreach (KeyValuePair<string, int> Kvp in AvailableflavourDic)
             {
                 Console.WriteLine($" {Kvp.Key,-10} ${Kvp.Value,-2:F2}");
-                i++;
             }
             Console.WriteLine(" -----------------------------------------");
 
