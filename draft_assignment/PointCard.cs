@@ -28,20 +28,20 @@ namespace draft_assignment
             PunchCard = punchCard;
         }
         // Methods
-        public void AddPoint(double x)
+        public void AddPoint(int x)
         {
-            // Check later, not sure wht x is int
-            int earnedPoints = (int)Math.Floor(x * 0.72);
-            Points += earnedPoints;
-            if (Points >= 100 && Tier != "Gold")
+            Points += x; 
+        }
+        public void UpdateTier()
+        {
+            if (Points >= 100)
             {
                 Tier = "Gold";
             }
-            else if (Points >= 50 && Points <= 100 && Tier != "Silver")
+            else if (Points >= 50 && Tier != "Gold")
             {
                 Tier = "Silver";
             }
-
         }
         public void RedeemPoints(int pointsToRedeem)
         {

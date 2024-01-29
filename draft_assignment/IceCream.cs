@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace draft_assignment
 {
-    public abstract class IceCream: IComparable<IceCream>
+    public abstract class IceCream
     {
         // Declaring attributes
         private string _option;
@@ -30,12 +30,6 @@ namespace draft_assignment
         // Method
         // Abstract method 
         public abstract double CalculatePrice();
-
-        public int CompareTo(IceCream other)
-        {
-            // Compare based on price)
-            return CalculatePrice().CompareTo(other.CalculatePrice());
-        }
         public override string ToString()
         {
             string flavourDetails = "";

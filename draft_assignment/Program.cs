@@ -89,7 +89,7 @@ namespace draft_assignment
                         }
                         else if (opt == 8)
                         {
-                            // Call method for option 8
+                         
                         }
 
                     }
@@ -744,25 +744,36 @@ namespace draft_assignment
                                     }
                                     else if (opt == 3)
                                     {
-                                        
-                                        while (true)
+                                        if(oldorder.IceCreamList.Count > 1)
                                         {
-                                            Console.Write(" Enter the ice cream number you want to modify: ");
-                                            int iceCreamNumber = int.Parse(Console.ReadLine());
+                                            while (true)
+                                            {
+                                                Console.Write(" Enter the ice cream number you want to modify: ");
+                                                int iceCreamNumber = int.Parse(Console.ReadLine());
 
-                                            if (iceCreamNumber >= 1 && iceCreamNumber <= oldorder.IceCreamList.Count)
-                                            {
-                                                int delete_index = iceCreamNumber - 1;
-                                                Console.WriteLine($" Deleting Ice Cream #{iceCreamNumber}");
-                                                oldorder.DeleteIceCream(delete_index);
-                                                break;
-                                            }
-                                            else
-                                            {
-                                                Console.WriteLine($" Enter a valid icecream number");
-                                                continue;
+                                                if (iceCreamNumber >= 1 && iceCreamNumber <= oldorder.IceCreamList.Count)
+                                                {
+                                                    int delete_index = iceCreamNumber - 1;
+                                                    Console.WriteLine($" Deleting Ice Cream #{iceCreamNumber}");
+                                                    oldorder.DeleteIceCream(delete_index);
+                                                    break;
+                                                }
+                                                else
+                                                {
+                                                    Console.WriteLine($" Enter a valid ice cream number");
+                                                    continue;
+                                                }
                                             }
                                         }
+                                        else
+                                        {
+                                            Console.WriteLine($" You cannot delete an order, as you have only {oldorder.IceCreamList.Count} ice cream");
+                                            break;
+                                        }
+
+                                        
+                                        
+                                       
                                     }
                                     DisplayCustomerOrderDetails(customer);
                                 }
@@ -1003,7 +1014,7 @@ namespace draft_assignment
                 Console.WriteLine("\n ---------Gold Dequeue-------------");
                 ProcessCustomerOrder(goldQueue.Dequeue());
             }
-            if (regularQueue.Count > 0)
+            else if (regularQueue.Count > 0)
             {
                 Console.WriteLine("\n ---------Regular Dequeue-------------");
                 ProcessCustomerOrder(regularQueue.Dequeue());
@@ -1026,17 +1037,30 @@ namespace draft_assignment
             {
                 try
                 {
+                    bool status = customer.IsBirthday();
+                    Console.WriteLine(status);
+                      
                     if (customer.IsBirthday())
                     {
-                        IceCream mostExpensiveIceCream = order.IceCreamList.Max();
+                        IceCream mostExpensiveIceCream = order.IceCreamList[0];
+                        double maxPrice = mostExpensiveIceCream.CalculatePrice();
+
+                        for (int i = 1; i < order.IceCreamList.Count; i++)
+                        {
+                            double currentPrice = order.IceCreamList[i].CalculatePrice();
+                            if (currentPrice > maxPrice)
+                            {
+                                mostExpensiveIceCream = order.IceCreamList[i];
+                                maxPrice = currentPrice;
+                            }
+                        }
+
                         totalBill -= mostExpensiveIceCream.CalculatePrice();
                     }
                     if (pointCard.PunchCard == 10)
                     {
                         totalBill -= order.IceCreamList[0].CalculatePrice();
-                        pointCard.Punch();
-                        pointCard.PunchCard = 0;
-                        
+                        pointCard.PunchCard = 0;                      
                     }
 
                     if (pointCard.Tier == "Ordinary")
@@ -1070,16 +1094,19 @@ namespace draft_assignment
                         }
                     }
                     Console.Write(" Press any key to make payment: ");
-                    Console.ReadLine();
-                    for(int i = 0; i < order.IceCreamList.Count; i++)
+                    Console.ReadKey();
+                    foreach(IceCream icream in order.IceCreamList)
                     {
-                        customer.Rewards.Punch();
-                        if(i == 9)
+                        pointCard.Punch();
+                        if(pointCard.PunchCard == 10)
                         {
                             pointCard.PunchCard = 10;
+                            break;
                         }
+                        
                     }
-                    pointCard.AddPoint(totalBill);
+                    int earnedPoints = (int)Math.Floor(totalBill * 0.72);
+                    pointCard.AddPoint(earnedPoints);
                     order.TimeFulfilled = DateTime.Now;
                     customer.OrderHistory.Add(order);
                     order = null;
@@ -1095,7 +1122,6 @@ namespace draft_assignment
                 }
             }
         }
-
         // Reading all necessary csv files
         // Read and store data from customer.csv file. (Dictionary)
         public static void ReadCustomerCSV(Dictionary<int, Customer> customerDic)
